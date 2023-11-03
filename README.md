@@ -36,4 +36,6 @@ frontend:
 It represents the view of the application which launches by default on http://localhost:5173/ . It uses Vite 4.5.0 + React. In order to run it you need the following:  
 Node.js 20.9.0: https://nodejs.org/en  
 Visual Studio Code (or any other code editor, preferably one which can open a terminal inside it): https://code.visualstudio.com/  
-Once you clone the repository, in order to run the project you need to type the following command in the terminal: npm run dev
+Once you clone the repository, in order to run the project you need to type the following command in the terminal:  
+npm install  
+npm run dev
