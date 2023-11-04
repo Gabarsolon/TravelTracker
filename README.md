@@ -6,6 +6,7 @@ Frontend:
 Alexandra- Frontend  
 Oana- Frontend  
 Stefana- Frontend  
+András - Frontend  
 
 Backend:  
 Marius- Backend/QA
