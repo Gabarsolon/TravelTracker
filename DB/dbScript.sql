@@ -36,3 +36,28 @@ INSERT INTO "BucketList" VALUES
 (1, 1),
 (1, 4)
 SELECT * FROM "BucketList"
+
+ALTER TABLE "Destination"
+ADD description VARCHAR(255);
+
+SELECT * FROM "Destination"
+
+UPDATE "Destination" 
+SET description = 'Bucharest is the capital and largest city of Romania. It is described as the cultural, financial, entertainment, and media center in the country with a significant influence in Eastern and Southeastern Europe as well.'
+WHERE destination_id = 1
+
+UPDATE "Destination" 
+SET description = 'Cluj-Napoca is the second-most populous city in Romania and the seat of Cluj County in the northwestern part of the country.'
+WHERE destination_id = 2
+
+UPDATE "Destination" 
+SET description = 'Located at the head of Tokyo Bay, Tokyo is part of the Kantō region on the central coast of Honshu, Japan''s largest island. Tokyo serves as Japan''s economic center and the seat of both the Japanese government and the Emperor of Japan.'
+WHERE destination_id = 3
+
+UPDATE "Destination" 
+SET description = 'Straddling the banks of the River Isar north of the Alps, Munich is the seat of the Bavarian administrative region of Upper Bavaria, while being the most densely populated municipality in Germany with 4,500 people per km2.'
+WHERE destination_id = 4
+
+UPDATE "Destination" 
+SET description = 'Los Angeles is the financial and cultural center of the Southern California region. Los Angeles has a Mediterranean climate, an ethnically and culturally diverse population, in addition to a sprawling metropolitan area.'
+WHERE destination_id = 5
