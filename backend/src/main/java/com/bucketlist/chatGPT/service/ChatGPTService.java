@@ -3,6 +3,7 @@ package com.bucketlist.chatGPT.service;
 import com.bucketlist.chatGPT.model.ChatGPTChoice;
 import com.bucketlist.chatGPT.model.ChatGPTRequest;
 import com.bucketlist.chatGPT.model.ChatGPTResponse;
+import com.bucketlist.chatGPT.model.SearchRequest;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -80,5 +81,26 @@ public class ChatGPTService {
         } catch (Exception e) {
             return "Failed";
         }
+    }
+
+    public SearchRequest createSearchDestinationPrompt(String continent, String country, String month, String regionType,
+                                                String season, String activities) {
+        String rolePrompt = "Act as a travel agency. Suggest me one city to visit based on the preferences I give you. " +
+                "I will give you the continent, the country, the month I want to visit, if it’s in the season or not " +
+                "and the activities I want to have in the city or no further than 50 km away from it. You will offer" +
+                " me as a response the city and no more than 2 activities I can do." +
+                "Do not let me know I can ask follow up questions.";
+
+        String destinationPrompt = "Continent: " + continent + '\n' +
+                "Country: " + country + "\n" +
+                "Region type: " + regionType + "\n" +
+                "Month: " + month + "\n" +
+                "Season: " + season + "\n" +
+                "Activities: " + activities;
+
+        SearchRequest destinationRequest = new SearchRequest();
+        destinationRequest.setQuery(rolePrompt + "\n" + destinationPrompt);
+
+        return destinationRequest;
     }
 }
