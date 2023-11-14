@@ -1,0 +1,41 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Palatino';
+  }
+  
+  .app {
+    background-color: #efece2;
+    height: 100vh;
+    display: flex;
+  }
+  
+  .left-section,
+  .right-section {
+    flex: 0.25;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .left-section {
+    background-image: url('/img/left.png');
+  }
+  
+  .right-section {
+    background-image: url('/img/right.png');
+  }
+  
+  .content-section {
+    flex: 2;
+    background-color: #efece2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+  }
+  
+ 
