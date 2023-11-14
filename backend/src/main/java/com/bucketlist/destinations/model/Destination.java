@@ -9,54 +9,57 @@ public class Destination {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "destination_id", nullable = false)
-    private Long destination_id;
+    private Long destinationId;
     @NonNull
-    private String destination_country;
+    @Column(name = "destination_country")
+    private String destinationCountry;
     @NonNull
-    private String destination_city;
+    @Column(name = "destination_city")
+    private String destinationCity;
     @NonNull
-    private boolean is_public;
+    @Column(name = "is_public")
+    private Boolean isPublic;
 
-    public Destination(Long destination_id, @NonNull String destination_country, @NonNull String destination_city, @NonNull boolean is_public) {
-        this.destination_id = destination_id;
-        this.destination_country = destination_country;
-        this.destination_city = destination_city;
-        this.is_public = is_public;
+    public Destination(Long destinationId, @NonNull String destinationCountry, @NonNull String destinationCity, @NonNull boolean isPublic) {
+        this.destinationId = destinationId;
+        this.destinationCountry = destinationCountry;
+        this.destinationCity = destinationCity;
+        this.isPublic = isPublic;
     }
 
     public Destination() {
 
     }
 
-    public Long getDestination_id() {
-        return destination_id;
+    public Long getDestinationId() {
+        return destinationId;
     }
 
-    public void setDestination_id(Long destination_id) {
-        this.destination_id = destination_id;
+    public void setDestinationId(Long destinationId) {
+        this.destinationId = destinationId;
     }
 
-    public String getDestination_country() {
-        return destination_country;
+    public String getDestinationCountry() {
+        return destinationCountry;
     }
 
-    public void setDestination_country(String destination_country) {
-        this.destination_country = destination_country;
+    public void setDestinationCountry(String destinationCountry) {
+        this.destinationCountry = destinationCountry;
     }
 
-    public String getDestination_city() {
-        return destination_city;
+    public String getDestinationCity() {
+        return destinationCity;
     }
 
-    public void setDestination_city(String destination_city) {
-        this.destination_city = destination_city;
+    public void setDestinationCity(String destinationCity) {
+        this.destinationCity = destinationCity;
     }
 
-    public boolean isIs_public() {
-        return is_public;
+    public boolean isPublic() {
+        return isPublic;
     }
 
-    public void setIs_public(boolean is_public) {
-        this.is_public = is_public;
+    public void setPublic(boolean aPublic) {
+        this.isPublic = aPublic;
     }
 }

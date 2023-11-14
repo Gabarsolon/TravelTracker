@@ -29,13 +29,13 @@ public class DestinationService {
     }
 
     public List<Destination> getPublicDestinations() {
-        return destinationRepository.findByIsPublic(true);
+        return destinationRepository.findDestinationsByIsPublic(true);
     }
 
     public List<Destination> getDestinationsInUserBucketList(Long userId) {
-        List<BucketList> userBucketList = bucketListRepository.findByBucketListPK_user_id(userId);
+        List<BucketList> userBucketList = bucketListRepository.findBucketListByBucketListPK_UserId(userId);
         List<Long> destinationIds = userBucketList.stream()
-                .map(bucketList -> bucketList.getBucketListPK().getDestination_id())
+                .map(bucketList -> bucketList.getBucketListPK().getDestinationId())
                 .collect(Collectors.toList());
         return destinationRepository.findAllById(destinationIds);
     }

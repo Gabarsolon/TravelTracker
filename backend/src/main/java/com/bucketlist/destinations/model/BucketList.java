@@ -11,34 +11,34 @@ public class BucketList {
     public static class BucketListPK implements Serializable {
         @Column(name = "user_id")
 //        @OneToMany
-        private Long user_id;
+        private Long userId;
         @Column(name = "destination_id")
 //        @OneToMany
-        private Long destination_id;
+        private Long destinationId;
 
-        public BucketListPK(Long user_id, Long destination_id) {
-            this.user_id = user_id;
-            this.destination_id = destination_id;
+        public BucketListPK(Long userId, Long destinationId) {
+            this.userId = userId;
+            this.destinationId = destinationId;
         }
         public BucketListPK(){
 
         }
 
 
-        public Long getUser_id() {
-            return user_id;
+        public Long getUserId() {
+            return userId;
         }
 
-        public void setUser_id(Long user_id) {
-            this.user_id = user_id;
+        public void setUserId(Long userId) {
+            this.userId = userId;
         }
 
-        public void setDestination_id(Long destination_id) {
-            this.destination_id = destination_id;
+        public void setDestinationId(Long destinationId) {
+            this.destinationId = destinationId;
         }
 
-        public Long getDestination_id() {
-            return destination_id;
+        public Long getDestinationId() {
+            return destinationId;
         }
 
     }

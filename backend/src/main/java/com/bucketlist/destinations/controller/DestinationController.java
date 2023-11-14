@@ -25,7 +25,7 @@ public class DestinationController {
     @PostMapping("/add/{userId}")
     public ResponseEntity<Object> addDestination(@RequestBody Destination destination, @PathVariable Long userId){
         Destination savedDestination =  destinationService.addDestination(destination, userId);
-        bucketListService.linkDestinationToUser(userId, savedDestination.getDestination_id());
+        bucketListService.linkDestinationToUser(userId, savedDestination.getDestinationId());
         return new ResponseEntity<>("Destination added successfully to bucket list", HttpStatus.CREATED);
     }
 
