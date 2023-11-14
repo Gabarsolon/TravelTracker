@@ -21,7 +21,8 @@ Remus- Frontend(/Backend)
 
 Components:  
 backend:  
-It represents the backend side of the application. It launches by default on http://localhost:8080/ .  
+It represents the backend side of the application. It launches by default on http://localhost:8080/ .
+The api documenation can be accesed at http://localhost:8080/swagger-ui/index.html#/
 It was created using IntelliJ IDEA Ultimate (2022.2.2). It is written in Java + Spring Boot, and has the following properties:  
 Spring Boot: 3.1.5  
 JDK: Oracle OpenJDK 19.0.2  
