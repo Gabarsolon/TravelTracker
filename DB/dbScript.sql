@@ -1,26 +1,12 @@
--- Database: BucketListDB
-
--- DROP DATABASE IF EXISTS "BucketListDB";
-
-CREATE DATABASE "BucketListDB"
-    WITH
-    OWNER = postgres
-    ENCODING = 'UTF8'
-    LC_COLLATE = 'English_United States.1252'
-    LC_CTYPE = 'English_United States.1252'
-    TABLESPACE = pg_default
-    CONNECTION LIMIT = -1
-    IS_TEMPLATE = False;
-	
 CREATE TABLE "User" (
-   user_id INT PRIMARY KEY NOT NULL,
+   user_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,
 	email VARCHAR(100) NOT NULL,
 	username VARCHAR(50) NOT NULL,
 	password VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE "Destination" (
-   destination_id INT PRIMARY KEY NOT NULL,
+   destination_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,
 	destination_country VARCHAR(50) NOT NULL,
 	destination_city VARCHAR(100) NOT NULL,
 	--destination_longitude DOUBLE NOT NULL, // to be added after first demo
@@ -34,18 +20,44 @@ CREATE TABLE "BucketList" (
    destination_id INT REFERENCES "Destination"(destination_id)
 );
 
-INSERT INTO "User" VALUES (1, 'user1@gmail.com', 'user1', 'user1')
+INSERT INTO "User"(email, username, password) VALUES ('user1@gmail.com', 'user1', 'user1')
 SELECT * FROM "User"
 
-INSERT INTO "Destination" VALUES
-(1, 'Romania', 'Bucharest', true),
-(2, 'Romania', 'Cluj-Napoca', true),
-(3, 'Japan', 'Tokyo', true),
-(4, 'Germany', 'Munich', true),
-(5, 'USA', 'Los Angeles', true)
+INSERT INTO "Destination" (destination_country, destination_city, is_public)
+VALUES
+('Romania', 'Bucharest', true),
+('Romania', 'Cluj-Napoca', true),
+('Japan', 'Tokyo', true),
+('Germany', 'Munich', true),
+('USA', 'Los Angeles', true)
 SELECT * FROM "Destination"
 
 INSERT INTO "BucketList" VALUES
 (1, 1),
 (1, 4)
 SELECT * FROM "BucketList"
+
+ALTER TABLE "Destination"
+ADD description VARCHAR(255);
+
+SELECT * FROM "Destination"
+
+UPDATE "Destination" 
+SET description = 'Bucharest is the capital and largest city of Romania. It is described as the cultural, financial, entertainment, and media center in the country with a significant influence in Eastern and Southeastern Europe as well.'
+WHERE destination_id = 1
+
+UPDATE "Destination" 
+SET description = 'Cluj-Napoca is the second-most populous city in Romania and the seat of Cluj County in the northwestern part of the country.'
+WHERE destination_id = 2
+
+UPDATE "Destination" 
+SET description = 'Located at the head of Tokyo Bay, Tokyo is part of the Kantō region on the central coast of Honshu, Japan''s largest island. Tokyo serves as Japan''s economic center and the seat of both the Japanese government and the Emperor of Japan.'
+WHERE destination_id = 3
+
+UPDATE "Destination" 
+SET description = 'Straddling the banks of the River Isar north of the Alps, Munich is the seat of the Bavarian administrative region of Upper Bavaria, while being the most densely populated municipality in Germany with 4,500 people per km2.'
+WHERE destination_id = 4
+
+UPDATE "Destination" 
+SET description = 'Los Angeles is the financial and cultural center of the Southern California region. Los Angeles has a Mediterranean climate, an ethnically and culturally diverse population, in addition to a sprawling metropolitan area.'
+WHERE destination_id = 5

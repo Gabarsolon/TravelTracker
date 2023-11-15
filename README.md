@@ -21,7 +21,8 @@ Remus- Frontend(/Backend)
 
 Components:  
 backend:  
-It represents the backend side of the application. It launches by default on http://localhost:8080/ .  
+It represents the backend side of the application. It launches by default on http://localhost:8080/ .
+The api documenation can be accesed at http://localhost:8080/swagger-ui/index.html#/
 It was created using IntelliJ IDEA Ultimate (2022.2.2). It is written in Java + Spring Boot, and has the following properties:  
 Spring Boot: 3.1.5  
 JDK: Oracle OpenJDK 19.0.2  
@@ -44,7 +45,10 @@ npm run dev
 DB:  
 The database where we store our users, their bucket lists and destinations. It is written in PostgreSQL using pgAdmin4 (v15). Its structure is attached below.  
 In order to use it in your project, you need to do the following (Here is a tutorial on how do it in case you do not want to read :) https://www.youtube.com/watch?v=3AKIA8pu8YY):  
-install pgAdmin4 (https://www.pgadmin.org/download/pgadmin-4-windows/) and start it  
+install PostgreSQL (https://www.postgresql.org/download/) (leave everythig checked when you need to select the componenets) and pgAdmin4 (check it when you install PostgreSQL or download it from: https://www.pgadmin.org/download/pgadmin-4-windows/)  
+launch Stack Builder at exit, select the PostgreSQL and make sure you check the psqlODBC under 'Database Drivers'  
+
+Launch pgAdmin4:  
 on the left side, in the 'Browser' list select the default Server (or create one if there is none)  
 create a Database by right clicking on the 'Database' drop-down and clicking 'Create'->'Database'  
 IMPORTANT: name it: BucketListDB  
