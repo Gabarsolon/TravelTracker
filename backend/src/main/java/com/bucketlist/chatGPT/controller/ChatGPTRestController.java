@@ -3,8 +3,15 @@ package com.bucketlist.chatGPT.controller;
 import com.bucketlist.chatGPT.model.DestinationRequest;
 import com.bucketlist.chatGPT.model.SearchRequest;
 import com.bucketlist.chatGPT.service.ChatGPTService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -24,7 +31,18 @@ public class ChatGPTRestController {
     }
 
    @GetMapping("/getRecommendedDestination")
-   public String getRecommendedDestination(@RequestBody DestinationRequest destinationRequest) {
+   public ResponseEntity<String> getRecommendedDestination(@Valid @RequestBody DestinationRequest destinationRequest, BindingResult bindingResult) {
+       if (bindingResult.hasErrors()) {
+           return ResponseEntity
+                   .badRequest()
+                   .body(
+                           bindingResult.getAllErrors()
+                                   .stream()
+                                   .map(ObjectError::getDefaultMessage)
+                                   .collect(Collectors.joining("\n"))
+                   );
+       }
+
        String continent = destinationRequest.getContinent();
        String country = destinationRequest.getCountry();
        String regionType = destinationRequest.getRegionType();
@@ -42,7 +60,9 @@ public class ChatGPTRestController {
         SearchRequest recommendedDestination = chatGPTService.createSearchDestinationPrompt(
                 continent, country, month, regionType, season, activities);
 
-        return this.searchChatGPT(recommendedDestination);
+        return ResponseEntity
+                .accepted()
+                .body(this.searchChatGPT(recommendedDestination));
    }
 
 }
