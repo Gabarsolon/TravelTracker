@@ -1,5 +1,6 @@
 package com.bucketlist.chatGPT.controller;
 
+import com.bucketlist.chatGPT.model.DestinationRequest;
 import com.bucketlist.chatGPT.model.SearchRequest;
 import com.bucketlist.chatGPT.service.ChatGPTService;
 import jakarta.validation.Valid;
