@@ -1,57 +1,189 @@
 body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: 'Palatino';
-  }
-  
-  .app {
-    background-color: #efece2;
-    height: 100vh;
-    display: flex;
-  }
-  
-  .left-section,
-  .right-section {
-    flex: 0.25;
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .left-section {
-    background-image: url('/img/left.png');
-  }
-  
-  .right-section {
-    background-image: url('/img/right.png');
-  }
-  
-  .content-section {
-    flex: 2;
-    background-color: #efece2;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
-  }
-  
-  .title {
-    font-size: 24px;
-    color: #000000;
-    text-align: center;
-    align-self: flex-start;
-    margin-top: 7px;
-  }
-  
-  .description{
-    font-size: 16px;
-    color:#000000;
-    text-align: center;
-    align-self: flex-start;
-    margin-top: 3px;
-    
-  }
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Palatino';
+}
+
+.app {
+  background-color: #efece2;
+  height: 100vh;
+  display: flex;
+}
+
+.left-section,
+.right-section {
+  flex: 0.25;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.left-section {
+  background-image: url('/img/left.png');
+}
+
+.right-section {
+  background-image: url('/img/right.png');
+}
+
+.content-section {
+  flex: 2;
+  background-color: #efece2;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+}
+
+.title {
+  font-size: 24px;
+  color: #000000;
+  text-align: center;
+  align-self: flex-start;
+  margin-top: -10px;
+}
+
+.description{
+  font-size: 16px;
+  color:#000000;
+  text-align: center;
+  align-self: flex-start;
+  margin-top: -7px;
+
+}
+
+.main-layout{
+  text-align: center;
+  align-self: flex-start;
+  margin-top: 20px;
+  border: 2px #f2c9a6;
+  border-radius: 15px;
+  border-style: solid;
+  background-color: #f7f4ed;
+  width: 90%;
+  margin-left: auto;  /* Add this line to set left margin to auto */
+  margin-right: auto; /* Add this line to set right margin to auto */
+
+}
+
+.component-container{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  width: auto;
+  margin-left: 40px;
+  margin-right: 40px;
+}
+
+.dropdowns-checkboxes{
+  display: flex;
+  flex-direction: row;
+}
+.dropdowns {
+  display: flex;
+  flex-direction: row;
+  width: 50%;
+  gap: 30px;
+  margin: 20px;
+}
+.dropdown-left, .dropdown-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50%;
+  gap:15px;
+}
+
+
+.checkboxes {
+  display: flex;
+  flex-direction: row;
+  width: 50%;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  gap: 5%;
+  margin-left: 2%;
+}
+
+.checkboxes-left , .checkboxes-right {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  gap: 15px;
+  align-items: center;
+  text-wrap: normal;
+}
+
+label {
+  font-family: 'Palatino' !important;
+}
+
+.checkbox-label {
+  font-family: 'Palatino';
+}
+
+.text-boxes {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+}
+.additionalInfo-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-left:20px;
+  margin-right:20px;
+  gap: 3%;
+
+}
+
+.additional-info {
+  width: 90%;
+  height: 30px;
+  background-color: #fffffc;
+  border-color: #f2c9a6;
+
+}
+
+.generate-button {
+  width: 10%;
+  height: 30px;
+
+
+}
+
+.additional-info-label {
+  text-align: left;
+  margin-left:20px;
+  font-size: 17px;
+}
+
+.chatResponse-button-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin:23px;
+  margin-top: 40px;
+  gap: 20px;
+}
+
+.chatResponse {
+  width: 100%;
+  height: 130px;
+  background-color: #fffffc;
+  border-color: #f2c9a6;
+
+}
+
+.add-button {
+  width: 10%;
+  margin-top: 50px;
+}
