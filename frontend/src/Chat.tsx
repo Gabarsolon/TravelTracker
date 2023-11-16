@@ -8,19 +8,24 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
+import Button from "@mui/material/Button";
 
 const Chat: React.FC = () => {
+    //for dropdowns
     const [selectedContinent, setSelectedContinent] = useState('');
     const [selectedCountry, setSelectedCountry] = useState('');
     const [selectedMonth, setSelectedMonth] = useState('');
     const [selectedSeason, setSelectedSeason] = useState('');
-    // Add similar state variables for the other checkboxes if needed
-    const [textBox1, setTextBox1] = useState('');
-    const [textBox2, setTextBox2] = useState('');
+
+    const [additionalInfoTextBox, setAdditionalInfoTextBox] = useState('');
+    const [chatResponseTextBox, setChatResponseTextBox] = useState('');
+    const [hasChanges, setHasChanges] = useState(false);
 
     // dropdowns lists
     const monthsList = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const seasonList = ['Yes', 'No', 'Does not matter'];
+
+    // you need to populate those 2 from backend
     const continentList =[];
     const countryList = [];
 
@@ -35,11 +40,13 @@ const Chat: React.FC = () => {
     });
     const {mountain, beach, countrySide, urban, tropical, historical} = stateCheckbox;
 
-    // you need to populate the continent list first, then, based on the selected continent, populate the countryList
 
-    const handleButtonClick = () => {
-        // Handle the button click logic here
-        // You can use the selected values, checkboxes, and textboxes for further actions
+    const handleGenerateButtonClick = () => {
+        // the additional info button
+    };
+
+    const handleAddButtonClick = () => {
+        // the chatGpt response button
     };
 
     const handleMonthChange = (event) => {
@@ -113,27 +120,53 @@ const Chat: React.FC = () => {
                         </FormGroup>
                         <div className="checkboxes-right">
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox checked={beach} onChange={handleChangeCheckbox} name="beach" style={{color:"#f0b17a"}}/>} label={<Typography variant="body1" style={{ fontFamily: 'Palatino' }}>Beach</Typography>} />
-                                <FormControlLabel control={<Checkbox checked={urban} onChange={handleChangeCheckbox} name="urban" style={{color:"#f0b17a"}}/>} label={<Typography variant="body1" style={{ fontFamily: 'Palatino' }}>Urban</Typography>} />
-                                <FormControlLabel control={<Checkbox checked={historical} onChange={handleChangeCheckbox} name="historical" style={{color:"#f0b17a"}}/>} label={<Typography variant="body1" style={{ fontFamily: 'Palatino' }}>Historical</Typography>} />
+                                <FormControlLabel control={<Checkbox checked={beach}
+                                                                     onChange={handleChangeCheckbox}
+                                                                     name="beach" style={{color:"#f0b17a"}}/>}
+                                                  label={<Typography variant="body1"
+                                                                     style={{ fontFamily: 'Palatino' }}>Beach</Typography>}
+                                />
+                                <FormControlLabel control={<Checkbox checked={urban}
+                                                                     onChange={handleChangeCheckbox}
+                                                                     name="urban" style={{color:"#f0b17a"}}/>}
+                                                  label={<Typography variant="body1"
+                                                                     style={{ fontFamily: 'Palatino' }}>Urban</Typography>}
+                                />
+                                <FormControlLabel control={<Checkbox checked={historical}
+                                                                     onChange={handleChangeCheckbox}
+                                                                     name="historical" style={{color:"#f0b17a"}}/>}
+                                                  label={<Typography variant="body1"
+                                                                     style={{ fontFamily: 'Palatino' }}>Historical</Typography>}
+                                />
                             </FormGroup>
                         </div>
                     </div>
 
                 </div>
                 <div className="text-boxes">
-                    <label className="addiotional-info-label">Additional Info:</label>
+                    <label className="additional-info-label">Additional Info:</label>
                     <div className="additionalInfo-button-container">
-                        <input className="additional-info" type="text" value={textBox1} onChange={(e) => setTextBox1(e.target.value)}/>
-                        <button className="generate-button" onClick={handleButtonClick}>Generate</button>
+                        <input className="additional-info" type="text" value={additionalInfoTextBox} onChange={(e) => setAdditionalInfoTextBox(e.target.value)}/>
+                        <Button className="generate-button" variant="contained" onClick={handleGenerateButtonClick}
+                                style={{backgroundColor: '#f0b17a',
+                                    fontFamily: 'Palatino',
+                                    textTransform: 'capitalize'}}>Generate
+                        </Button>
                     </div>
-                    {/* Textboxes */}
+                    {/*Here I tried to enable the add button only when there are changes in the chatResponseTextBox from the backend*/}
                     <div className="chatResponse-button-container">
-                        <input type="text" value={textBox2} onChange={(e) => setTextBox2(e.target.value)}/>
+                        <input disabled className="chatResponse" readOnly type="text" value={chatResponseTextBox}
+                               onChange={(e) => {setChatResponseTextBox(e.target.value);
+                                                    setHasChanges(true)}}/>
+                        <Button className="add-button" variant="contained"
+                                disabled={!hasChanges}
+                                onClick={handleAddButtonClick}
+                                style={{backgroundColor: '#f0b17a',
+                                    fontFamily: 'Palatino',
+                                    textTransform: 'capitalize',
 
-                        {/* Button */}
-
-                        <button onClick={handleButtonClick}>Submit</button>
+                                }}>Add
+                        </Button>
                     </div>
 
                 </div>
@@ -149,7 +182,7 @@ const Chat: React.FC = () => {
 function DropdownItem(props) {
     return (
         <FormControl fullWidth>
-            <InputLabel id="dropdown-item">{props.name}</InputLabel>
+            <InputLabel required id="dropdown-item">{props.name}</InputLabel>
             <Select
                 labelId="dropdown-item-label"
                 id="dropdown-item"
