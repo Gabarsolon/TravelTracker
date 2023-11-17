@@ -31,24 +31,13 @@ public class ChatGPTRestController {
     }
 
    @GetMapping("/getRecommendedDestination")
-   public ResponseEntity<String> getRecommendedDestination(@Valid @RequestBody DestinationRequest destinationRequest, BindingResult bindingResult) {
-       if (bindingResult.hasErrors()) {
-           return ResponseEntity
-                   .badRequest()
-                   .body(
-                           bindingResult.getAllErrors()
-                                   .stream()
-                                   .map(ObjectError::getDefaultMessage)
-                                   .collect(Collectors.joining("\n"))
-                   );
-       }
-
-       String continent = destinationRequest.getContinent();
-       String country = destinationRequest.getCountry();
-       String regionType = destinationRequest.getRegionType();
-       String month = destinationRequest.getMonth();
-       String season = destinationRequest.getSeason();
-       String activities = destinationRequest.getActivities();
+   public ResponseEntity<String> getRecommendedDestination(
+           @RequestParam("continent") String continent,
+           @RequestParam("country") String country,
+           @RequestParam("regionType") String regionType,
+           @RequestParam("month") String month,
+           @RequestParam("season") String season,
+           @RequestParam("activities") String activities){
 
         log.info("\nsearchDestination - continent: " + continent +
                 "\ncountry: " + country +
@@ -59,10 +48,10 @@ public class ChatGPTRestController {
 
         SearchRequest recommendedDestination = chatGPTService.createSearchDestinationPrompt(
                 continent, country, month, regionType, season, activities);
-
+        String res = this.searchChatGPT(recommendedDestination);
         return ResponseEntity
                 .accepted()
-                .body(this.searchChatGPT(recommendedDestination));
+                .body(res);
    }
 
 }
