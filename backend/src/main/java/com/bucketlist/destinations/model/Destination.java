@@ -1,6 +1,5 @@
 package com.bucketlist.destinations.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.NonNull;
 
@@ -10,7 +9,6 @@ public class Destination {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "destination_id", nullable = false)
-    @Schema(hidden = true)
     private Long destinationId;
     @NonNull
     @Column(name = "destination_country")
@@ -22,11 +20,21 @@ public class Destination {
     @Column(name = "is_public")
     private Boolean isPublic;
 
-    public Destination(Long destinationId, @NonNull String destinationCountry, @NonNull String destinationCity, @NonNull boolean isPublic) {
+    @NonNull
+    @Column(name = "destination_name")
+    private String destinationName;
+
+    @NonNull
+    @Column(name = "description")
+    private String description;
+
+    public Destination(Long destinationId, @NonNull String destinationCountry, @NonNull String destinationCity, @NonNull boolean isPublic, @NonNull String destinationName, @NonNull String description) {
         this.destinationId = destinationId;
         this.destinationCountry = destinationCountry;
         this.destinationCity = destinationCity;
         this.isPublic = isPublic;
+        this.destinationName = destinationName;
+        this.description = description;
     }
 
     public Destination() {
@@ -63,5 +71,21 @@ public class Destination {
 
     public void setPublic(boolean aPublic) {
         this.isPublic = aPublic;
+    }
+
+    public String getDestinationName() {
+        return destinationName;
+    }
+
+    public void setDestinationName(String destinationName) {
+        this.destinationName = destinationName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
