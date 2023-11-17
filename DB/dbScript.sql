@@ -61,3 +61,29 @@ WHERE destination_id = 4
 UPDATE "Destination" 
 SET description = 'Los Angeles is the financial and cultural center of the Southern California region. Los Angeles has a Mediterranean climate, an ethnically and culturally diverse population, in addition to a sprawling metropolitan area.'
 WHERE destination_id = 5
+
+-- add destination_name field to Destionation table
+SELECT * FROM "Destination"
+
+ALTER TABLE "Destination"
+ADD COLUMN destination_name VARCHAR(255)
+
+UPDATE "Destination" 
+SET destination_name = 'Casa poporului'
+WHERE destination_id = 1
+
+UPDATE "Destination" 
+SET destination_name = 'Piata Unirii'
+WHERE destination_id = 2
+
+UPDATE "Destination" 
+SET destination_name = 'Tokyo Skytree'
+WHERE destination_id = 3
+
+UPDATE "Destination" 
+SET destination_name = 'Marienplatz'
+WHERE destination_id = 4
+
+UPDATE "Destination" 
+SET destination_name = 'Universal Studios Hollywood'
+WHERE destination_id = 5
