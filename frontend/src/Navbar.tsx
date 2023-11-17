@@ -1,6 +1,5 @@
-// Navbar.tsx
 import React, {useState} from 'react';
-import './Navbar.css'; // Import your CSS file
+import './Navbar.css';
 
 interface NavbarProps {
   title: string;

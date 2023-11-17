@@ -1,0 +1,193 @@
+/* Add this to your CSS file or create a new one, e.g., main-page.css */
+
+.app {
+    display: flex;
+  }
+  
+  .left-section-bucket,
+  .right-section-bucket {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .left-section-bucket-content,
+  .right-section-bucket-content {
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .right-section-bucket {
+    margin-left: 20px; 
+  }
+
+.titleOfList {
+    font-size: 30px;
+    color: #000000;
+    font-weight: bold;
+    margin-top: -30px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .list-container {
+    margin: 20px;
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #BF8F62;
+    border-radius: 8px;
+   /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);*/
+   /* background-color: #f5d7b883; /* Adjust the background color as needed */
+    height:450px;
+    width: 370px;
+  }
+  
+  .list-container h2 {
+    color: #333;
+  }
+  
+  .list-container ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .list-container li {
+    margin-bottom: 8px;
+    font-size: 24px;
+  }
+  .list-container li:not(:last-child) {
+    border-bottom: 1px solid #BF8F62; /* Adjust the border color as needed */
+  }
+  .addButton {
+    background-color: #f5d6b8;
+  color: black;
+  border: none;
+  padding: 5px 15px;
+  font-size: 30px;
+  cursor: pointer;
+  border-radius: 5px;
+  position: absolute;
+  bottom: 10px; /* Adjust as needed */
+  left: 28%;
+  transform: translateX(-50%);
+  }
+  
+  .addButton:hover {
+    background-color:  #b19a82; /* Darker green on hover, adjust as needed */
+  }
+  .addButton::after {
+    content: "Add a destination";
+    position: absolute;
+    top: 93%;
+    left: 35%;
+    transform: translateX(-50%);
+    background-color: #d6c4b0;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: rgb(0, 0, 0);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .addButton:hover::after {
+    opacity: 1;
+  }
+
+  .questionButton {
+    background-color:  #f5d6b8; /* Green background color, adjust as needed */
+    color: black;
+    border: none;
+    padding: 5px 15px;
+    font-size: 30px;
+    cursor: pointer;
+    /* margin-left: 150px;*/
+    margin-top: 15px; 
+    border-radius: 5px;
+  }
+  
+  .questionButton:hover {
+    background-color:  #b19a82; /* Darker green on hover, adjust as needed */
+  }
+  .questionButton::after {
+    content: "You can drag and drop the items to add them to your list!";
+    position: absolute;
+    top: 21%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #d6c4b0;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: rgb(0, 0, 0);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    
+  }
+  
+  .questionButton:hover::after {
+    opacity: 1;
+  }
+
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #EFECE2;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    max-width: 400px; /* Adjust max-width as needed */
+    width: 100%;
+  }
+
+  
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+    z-index: 998; /* Ensure the overlay is below the modal but above the rest of the content */
+    display: none;
+  }
+  
+  .modal label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .modal input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .modal button {
+    background-color: #f5d6b8;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 10px;
+    border-radius: 5px;
+  }
+  
+  .modal button:hover {
+    background-color: #b19a82;
+  }
+  
+
+ 
