@@ -42,8 +42,18 @@ public class DestinationController {
     }
 
      @GetMapping("/destinationsInBucketList/{userId}")
-    public ResponseEntity<List<Destination>> getDestinationsInUserBucketList(@PathVariable Long userId) {
-        List<Destination> userBucketListDestinations = destinationService.getDestinationsInUserBucketList(userId);
+    public ResponseEntity<List<Destination>> getDestinationsInUserBucketList(@PathVariable Long userId, @RequestParam String filteringAttribute, @RequestParam(required = false) String filterInputData) {
+         if (filterInputData == null)
+             filterInputData = "";
+        List<Destination> userBucketListDestinations = destinationService.getDestinationsInUserBucketList(userId, filteringAttribute, filterInputData);
         return new ResponseEntity<>(userBucketListDestinations, HttpStatus.OK);
+    }
+
+    @GetMapping("/filterPublicDestinations")
+    public ResponseEntity<List<Destination>> filterPublicDestinations(@RequestParam String filteringAttribute, @RequestParam(required = false) String filterInputData){
+        if (filterInputData == null)
+            filterInputData = "";
+        List<Destination> filteredPublicDestinations = destinationService.getPublicDestinationsFiltered(filteringAttribute, filterInputData);
+        return new ResponseEntity<>(filteredPublicDestinations, HttpStatus.OK);
     }
 }   
