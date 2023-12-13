@@ -3,10 +3,12 @@ package com.bucketlist.destinations.controller;
 import java.util.List;
 
 import com.bucketlist.destinations.model.Destination;
+import com.bucketlist.destinations.model.Vote;
 import com.bucketlist.destinations.service.BucketListService;
 import com.bucketlist.destinations.service.DestinationService;
 
 
+import com.bucketlist.destinations.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -18,17 +20,20 @@ import org.springframework.web.bind.annotation.*;
 public class DestinationController {
     private final DestinationService destinationService;
     private final BucketListService bucketListService;
+    private final VoteService voteService;
 
     @Autowired
-    public DestinationController(DestinationService destinationService, BucketListService bucketListService) {
+    public DestinationController(DestinationService destinationService, BucketListService bucketListService, VoteService voteService) {
         this.destinationService = destinationService;
         this.bucketListService = bucketListService;
+        this.voteService = voteService;
     }
 
     @PostMapping("/add/{userId}")
     public ResponseEntity<Object> addDestination(@RequestBody Destination destination, @PathVariable Long userId) {
         Destination savedDestination = destinationService.addDestination(destination, userId);
         bucketListService.linkDestinationToUser(userId, savedDestination.getDestinationId());
+        voteService.addDefaultDestinationVotes(destination.getDestinationId());
         return new ResponseEntity<>("Destination added successfully to bucket list", HttpStatus.CREATED);
     }
 
@@ -75,5 +80,11 @@ public class DestinationController {
             filterInputData = "";
         Integer publicDestinationsCount = destinationService.getNumberOfFilteredPublicDestinations(filteringAttribute, filterInputData);
         return new ResponseEntity<>(publicDestinationsCount, HttpStatus.OK);
+    }
+
+    @GetMapping("/votes/{destinationId}")
+    public ResponseEntity<List<Vote>> getDestinationVotes(@PathVariable Long destinationId) {
+        List<Vote> allDestinationVotes = voteService.getAllDestinationVotes(destinationId);
+        return new ResponseEntity<>(allDestinationVotes, HttpStatus.OK);
     }
 }   
