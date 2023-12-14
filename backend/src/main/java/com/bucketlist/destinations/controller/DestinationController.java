@@ -93,7 +93,7 @@ public class DestinationController {
     @Transactional
     @DeleteMapping("/delete/{userId}/{destinationId}")
     public ResponseEntity<Object> deleteDestination(@PathVariable Long userId, @PathVariable Long destinationId) {
-        try{
+        try {
             destinationService.deleteDestination(destinationId, userId);
             return new ResponseEntity<>("Destination deleted successfully", HttpStatus.OK);
         } catch (NotFoundException exception) {
@@ -101,6 +101,7 @@ public class DestinationController {
         } catch (Exception exception) {
             return new ResponseEntity<>("Error occurred while processing the request", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
     @GetMapping("/{destinationId}")
     public ResponseEntity<?> getDestinationDetails(@PathVariable Long destinationId) {
         try {
