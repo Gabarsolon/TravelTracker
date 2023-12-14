@@ -21,7 +21,7 @@ CREATE TABLE "BucketList" (
 );
 
 INSERT INTO "User"(email, username, password) VALUES ('user1@gmail.com', 'user1', 'user1');
-SELECT * FROM "User"
+SELECT * FROM "User";
 
 INSERT INTO "Destination" (destination_country, destination_city, is_public)
 VALUES
@@ -29,13 +29,13 @@ VALUES
 ('Romania', 'Cluj-Napoca', true),
 ('Japan', 'Tokyo', true),
 ('Germany', 'Munich', true),
-('USA', 'Los Angeles', true)
+('USA', 'Los Angeles', true);
 SELECT * FROM "Destination";
 
 INSERT INTO "BucketList" VALUES
 (1, 1),
 (1, 4);
-SELECT * FROM "BucketList"
+SELECT * FROM "BucketList";
 
 ALTER TABLE "Destination"
 ADD description VARCHAR(255);
@@ -63,7 +63,7 @@ SET description = 'Los Angeles is the financial and cultural center of the South
 WHERE destination_id = 5;
 
 -- add destination_name field to Destionation table
-SELECT * FROM "Destination"
+SELECT * FROM "Destination";
 
 ALTER TABLE "Destination"
 ADD COLUMN destination_name VARCHAR(255);
