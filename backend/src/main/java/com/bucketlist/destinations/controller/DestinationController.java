@@ -57,6 +57,17 @@ public class DestinationController {
         List<Destination> userBucketListDestinations = destinationService.getDestinationsInUserBucketList(userId, filteringAttribute, filterInputData, PageRequest.of(pageNumber, pageSize));
         return new ResponseEntity<>(userBucketListDestinations, HttpStatus.OK);
     }
+    @GetMapping("/{destinationId}")
+    public ResponseEntity<?> getDestinationDetails(@PathVariable Long destinationId) {
+        try {
+            Destination destination = destinationService.getDestinationDetails(destinationId);
+            return new ResponseEntity<>(destination, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Destination not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
+
 
     @GetMapping("/destinationsInBucketList/{userId}/count")
     public ResponseEntity<Integer> getNumberOfDestinationsInBucketList(@PathVariable Long userId, @RequestParam String filteringAttribute, @RequestParam(required = false) String filterInputData) {

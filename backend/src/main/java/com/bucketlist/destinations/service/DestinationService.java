@@ -64,4 +64,9 @@ public class DestinationService {
     public Integer getNumberOfFilteredPublicDestinations(String filteringAttribute, String filterInputData) {
         return getPublicDestinationsFiltered(filteringAttribute, filterInputData, Pageable.unpaged()).size();
     }
+
+    public Destination getDestinationDetails(Long destinationId) {
+        return destinationRepository.findById(destinationId)
+                .orElseThrow(() -> new RuntimeException("Destination not found with id: " + destinationId));
+    }
 }
