@@ -56,31 +56,37 @@ const PublicList: React.FC = () => {
     setFilterAttribute(event.target.value);
   };
 
+  const handleDragStart = (e: React.DragEvent<HTMLLIElement>, destination: Destination) => {
+    e.dataTransfer.setData('text/plain', JSON.stringify(destination));
+  };
+
   return (
     <div>
-      
       <h2 className='titleOfList'>Public List</h2>
-      
       <div className="list-container">
-      <div className="filter-bar">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-        />
-        <select value={filterAttribute} onChange={handleFilterChange}>
-          <option value="DestinationName">Name</option>
-          <option value="DestinationCity">City</option>
-          <option value="DestinationCountry">Country</option>
-        </select>
-      </div>
+        <div className="filter-bar">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+          <select value={filterAttribute} onChange={handleFilterChange}>
+            <option value="DestinationName">Name</option>
+            <option value="DestinationCity">City</option>
+            <option value="DestinationCountry">Country</option>
+          </select>
+        </div>
         {displayedDestinations.length === 0 ? (
           <p>Empty Public List</p>
         ) : (
           <ul>
             {displayedDestinations.map((destination) => (
-              <li key={destination.destinationId}>
+              <li
+                key={destination.destinationId}
+                draggable
+                onDragStart={(e) => handleDragStart(e, destination)}
+              >
                 <strong style={{ fontSize: '1.2em', fontStyle: 'oblique' }}>
                   {destination.destinationName}
                 </strong><br />
