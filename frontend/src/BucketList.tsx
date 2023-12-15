@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-
+import { Pagination } from '@mui/material';
 interface Destination {
 
     destinationCountry: string;
@@ -19,12 +19,39 @@ const BucketList: React.FC = () => {
         description: '',
         destinationName: '',
     });
-    const pageNumber = 0; // Replace with your desired pageNumber
-    const pageSize = 10; // Replace with your desired pageSize
+   // const pageNumber = 0; // Replace with your desired pageNumber
+    const pageSize = 4; // Replace with your desired pageSize
     const filteringAttribute = '';
+    const [totalPages, setTotalPages] = useState<number>(10);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [countDestinations, setCountDestinations] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(true); // Add loading state
 
     useEffect(() => {
-        fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/1?pageNumber=${pageNumber}&pageSize=${pageSize}&filteringAttribute=${filteringAttribute}`, {
+        const fetchData = async () => {
+            try {
+                const countResponse = await fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/1/count?filteringAttribute=${filteringAttribute}`);
+                const countData = await countResponse.json();
+                const countDestinations = countData;
+                setCountDestinations(countDestinations);
+                const totalPages = Math.ceil(countDestinations / pageSize);
+                setTotalPages(totalPages);
+
+                const dataResponse = await fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/1?pageNumber=${currentPage - 1}&pageSize=${pageSize}&filteringAttribute=${filteringAttribute}`);
+                const data = await dataResponse.json();
+                setBucketList(data);
+            } catch (error) {
+                console.error('Error fetching initial data:', error);
+            } finally {
+                setLoading(false); // Set loading to false after data is fetched
+            }
+        };
+
+        fetchData();
+    }, [currentPage, pageSize, filteringAttribute]);
+
+    const fetchData = (page: number) => {
+        fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/1?pageNumber=${page - 1}&pageSize=${pageSize}&filteringAttribute=${filteringAttribute}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -33,8 +60,10 @@ const BucketList: React.FC = () => {
             .then(response => response.json())
             .then((data: Destination[]) => setBucketList(data))
             .catch(error => console.error('Error fetching bucket list:', error));
-    }, []);
-
+    }
+// TODO: daca mai adaugi o destinatie sa se duca pe ultima apagina
+    // TODO: aranjeaza jos paginarea
+    // TODO: vezi butonul de add
     const handleAddDestination = async () => {
         try {
             const response = await fetch('http://localhost:8080/api/v1/destination/add/1', {
@@ -58,12 +87,28 @@ const BucketList: React.FC = () => {
                     description: '',
                     destinationName: '',
                 });
+                const updatedCount = countDestinations + 1;
+                setCountDestinations(updatedCount);
+
+                const updatedTotalPages = Math.ceil(updatedCount / pageSize);
+                setTotalPages(updatedTotalPages);
+
+                // Set the current page to the newly calculated total pages
+                setCurrentPage(updatedTotalPages);
+
+
             } else {
                 console.error('Error adding destination:', response.statusText);
             }
         } catch (error) {
             console.error('Error adding destination:', error);
         }
+    };
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        // Update the page number when the user clicks on a different page
+        setCurrentPage(value);
+        fetchData(value);
     };
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -104,7 +149,20 @@ const BucketList: React.FC = () => {
                     }
                     else{
                         // Add the dragged item to the bucket list
-                        setBucketList((prevList) => [...prevList, draggedItem]);
+                        const updatedData = await fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/1?pageNumber=${currentPage - 1}&pageSize=${pageSize}&filteringAttribute=${filteringAttribute}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        }).then(response => response.json());
+
+                        // Update the bucketList state with the new data
+                        setBucketList(updatedData);
+
+                        setCountDestinations(prevCount => prevCount + 1);
+                        const updatedTotalPages = Math.ceil((countDestinations + 1) / pageSize);
+                        setTotalPages(updatedTotalPages);
+                        //setBucketList((prevList) => [...prevList, draggedItem]);
                     }
                 } catch (error) {
                     // Handle the error (e.g., show an error notification)
@@ -123,20 +181,35 @@ const BucketList: React.FC = () => {
     };
 
     return (
-        <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
             <h2 className='titleOfList'>Bucket List</h2>
             <div className="list-container">
-                {bucketList.length === 0 ? (
-                    <p>Empty Bucket List</p>
-                ) : (
+                {loading? (
+                    <p>Loading...</p>
+                ): (
                     <ul>
-                        {bucketList.map((destination, index) => (
-                            <li key={index}>
-                                {destination.destinationName}, {destination.destinationCountry}, {destination.destinationCity}
-                            </li>
-                        ))}
+                        {bucketList.length === 0 ? (
+                            <p>Empty Bucket List</p>
+                        ) : (
+                            bucketList.map((destination, index) => (
+                                <li key={index}>
+                                    {destination.destinationName}, {destination.destinationCountry}, {destination.destinationCity}
+                                </li>
+                            ))
+                        )}
                     </ul>
                 )}
+            </div>
+            <div className="pagination-container" align="center">
+                <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    showFirstButton
+                    showLastButton
+                    size="large"
+                   // style={{marginTop: '2px'}}
+                />
             </div>
             <button className="addButton" onClick={() => setShowAddModal(true)}>
                 +
