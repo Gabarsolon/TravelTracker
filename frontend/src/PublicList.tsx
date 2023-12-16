@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Pagination } from '@mui/material';
 
 interface Destination {
   destinationId: number;
@@ -14,14 +15,29 @@ const PublicList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filterAttribute, setFilterAttribute] = useState<string>('DestinationName');
 
+  const pageSize = 4;
+  const [totalPages, setTotalPages] = useState<number>(10);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [countDestinations, setCountDestinations] = useState<number>(0);
+
+
   useEffect(() => {
     const fetchFilteredDestinations = async () => {
       try {
+
+        const countResponse = await fetch(`http://localhost:8080/api/v1/destination/filterPublicDestinations/count?filteringAttribute=${filterAttribute}&filterInputData=${searchTerm}`);
+        const countData = await countResponse.json();
+        const countDestinations = countData;
+        setCountDestinations(countDestinations);
+        const updatedTotalPages = Math.ceil(countDestinations / pageSize);
+        setTotalPages(updatedTotalPages);
+        console.log("totalP: " + totalPages + " current: " + currentPage + " countD: " + countDestinations);
+
         const params = new URLSearchParams();
         params.append('filteringAttribute', filterAttribute);
         params.append('filterInputData', searchTerm || '');
-        params.append('pageNumber', '0');  // Set your desired page number
-        params.append('pageSize', '100');    // Set your desired page size
+        params.append('pageNumber', (currentPage - 1).toString());  // Set your desired page number
+        params.append('pageSize', pageSize.toString());    // Set your desired page size
 
         const filterUrl = `http://localhost:8080/api/v1/destination/filterPublicDestinations?${params.toString()}`;
 
@@ -44,7 +60,7 @@ const PublicList: React.FC = () => {
     };
 
     fetchFilteredDestinations();
-  }, [searchTerm, filterAttribute]);
+  }, [searchTerm, filterAttribute, currentPage]);
 
   const displayedDestinations = publicList;
 
@@ -60,10 +76,17 @@ const PublicList: React.FC = () => {
     e.dataTransfer.setData('text/plain', JSON.stringify(destination));
   };
 
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+
+    setCurrentPage(value);
+    // fetchData(value);
+   };
+
   return (
     <div>
-      <h2 className='titleOfList'>Public List</h2>
-      <div className="list-container">
+      <h2 className='titleOfList' >Public List</h2>
+      <div className="list-container" style={{ backgroundColor: '#f7f4ed'}}>
         <div className="filter-bar">
           <input
             type="text"
@@ -96,10 +119,21 @@ const PublicList: React.FC = () => {
                     ? `${destination.description.slice(0, 50)}...`
                     : destination.description}
                 </i>
+                <li></li>
               </li>
             ))}
           </ul>
         )}
+      </div>
+      <div className="pagination-container" align="center">
+        <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+            showFirstButton
+            showLastButton
+            size="large"
+        />
       </div>
     </div>
   );
