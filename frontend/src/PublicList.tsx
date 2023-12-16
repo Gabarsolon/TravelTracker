@@ -20,6 +20,11 @@ const PublicList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [countDestinations, setCountDestinations] = useState<number>(0);
 
+  const handleItemClick = (destinationId: number) => {
+    // Redirect to the destination details page using the destination ID
+    window.location.assign(`/detail/${destinationId}`);
+  };
+
 
   useEffect(() => {
     const fetchFilteredDestinations = async () => {
@@ -107,6 +112,7 @@ const PublicList: React.FC = () => {
             {displayedDestinations.map((destination) => (
               <li
                 key={destination.destinationId}
+                onClick={() => handleItemClick(destination.destinationId)}
                 draggable
                 onDragStart={(e) => handleDragStart(e, destination)}
               >
