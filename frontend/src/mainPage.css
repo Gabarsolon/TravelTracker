@@ -43,7 +43,33 @@
     height:450px;
     width: 370px;
   }
+
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f5d6b8; 
+    border-radius: 10px;
+  }
   
+  .filter-bar input {
+    padding: 8px 25px;
+    font-size: 14px;
+    border: none; /* Remove border for a cleaner appearance */
+    border-radius: 10px;
+    outline: none; /* Remove the default focus outline */
+  }
+  
+  .filter-bar select {
+    padding: 8px;
+    font-size: 14px;
+    margin-left: 20px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+  }
   .list-container h2 {
     color: #333;
   }

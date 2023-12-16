@@ -1,27 +1,26 @@
 import React, {useState, useEffect} from 'react';
 import { Pagination } from '@mui/material';
 interface Destination {
-
-    destinationCountry: string;
-    destinationCity: string;
-    public: boolean;
-    description: string;
-    destinationName: string;
+  destinationCountry: string;
+  destinationCity: string;
+  public: boolean;
+  description: string;
+  destinationName: string;
 }
 
 const BucketList: React.FC = () => {
-    const [bucketList, setBucketList] = useState<Destination[]>([]);
-    const [showAddModal, setShowAddModal] = useState<boolean>(false);
-    const [newDestination, setNewDestination] = useState<Destination>({
-        destinationCountry: '',
-        destinationCity: '',
-        public: false,
-        description: '',
-        destinationName: '',
-    });
-   // const pageNumber = 0; // Replace with your desired pageNumber
+  const [bucketList, setBucketList] = useState<Destination[]>([]);
+  const [showAddModal, setShowAddModal] = useState<boolean>(false);
+  const [newDestination, setNewDestination] = useState<Destination>({
+    destinationCountry: '',
+    destinationCity: '',
+    public: false,
+    description: '',
+    destinationName: '',
+  });
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [filterAttribute, setFilterAttribute] = useState<string>('DestinationName');
     const pageSize = 4; // Replace with your desired pageSize
-    const filteringAttribute = '';
     const [totalPages, setTotalPages] = useState<number>(10);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [countDestinations, setCountDestinations] = useState<number>(0);
@@ -48,7 +47,7 @@ const BucketList: React.FC = () => {
         };
 
         fetchData();
-    }, [currentPage, pageSize, filteringAttribute]);
+    }, [currentPage, pageSize, filterAttribute]);
 
     const fetchData = (page: number) => {
         fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/1?pageNumber=${page - 1}&pageSize=${pageSize}&filteringAttribute=${filteringAttribute}`, {
@@ -64,6 +63,32 @@ const BucketList: React.FC = () => {
 // TODO: daca mai adaugi o destinatie sa se duca pe ultima apagina
     // TODO: aranjeaza jos paginarea
     // TODO: vezi butonul de add
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userId = 1; // Replace with the appropriate user ID
+
+        const response = await fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/${userId}?pageNumber=0&pageSize=100&filteringAttribute=${filterAttribute}&filterInputData=${searchTerm}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setBucketList(data);
+        } else {
+          console.error('Error fetching bucket list:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching bucket list:', error);
+      }
+    };
+
+    fetchData();
+  }, [searchTerm, filterAttribute]);
+
     const handleAddDestination = async () => {
         try {
             const response = await fetch('http://localhost:8080/api/v1/destination/add/1', {
@@ -180,23 +205,45 @@ const BucketList: React.FC = () => {
         notifyBackend();
     };
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterAttribute(event.target.value);
+  };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
             <h2 className='titleOfList'>Bucket List</h2>
             <div className="list-container">
-                {loading? (
-                    <p>Loading...</p>
-                ): (
+        <div className="filter-bar">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+          <select value={filterAttribute} onChange={handleFilterChange}>
+            <option value="DestinationName">Name</option>
+            <option value="DestinationCity">City</option>
+            <option value="DestinationCountry">Country</option>
+          </select>
+        </div>
+                {bucketList.length === 0 ? (
+                    <p>Empty Bucket List</p>
+                ) : (
                     <ul>
-                        {bucketList.length === 0 ? (
-                            <p>Empty Bucket List</p>
-                        ) : (
-                            bucketList.map((destination, index) => (
-                                <li key={index}>
-                                    {destination.destinationName}, {destination.destinationCountry}, {destination.destinationCity}
-                                </li>
-                            ))
-                        )}
+                        {bucketList.map((destination, index) => (
+                            <li key={index}>
+                                <strong style={{ fontSize: '1.2em', fontStyle: 'oblique' }}>{destination.destinationName}</strong><br />
+                {destination.destinationCity}, {destination.destinationCountry}<br />
+                <i style={{ fontSize: '0.8em' }}>
+                  {destination.description.length > 50 ? `${destination.description.slice(0, 50)}...` : destination.description}
+                </i>
+                <li></li>
+                            </li>
+                        ))}
                     </ul>
                 )}
             </div>
