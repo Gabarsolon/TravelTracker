@@ -31,7 +31,9 @@
     margin-top: -30px;
     text-align: center;
     margin-bottom: 10px;
+    padding: 5px 15px;
   }
+
   .list-container {
     margin: 20px;
     margin-top: 20px;
@@ -94,12 +96,29 @@
   font-size: 30px;
   cursor: pointer;
   border-radius: 5px;
-  position: absolute;
-  bottom: 10px; /* Adjust as needed */
-  left: 28%;
-  transform: translateX(-50%);
+    margin-left: 20px;
+    position: absolute;
+
   }
-  
+
+  .button-and-title {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    margin-top: -30px;
+    }
+
+  .title-div {
+    display: flex;
+    align-items: center;
+  }
+
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   .addButton:hover {
     background-color:  #b19a82; /* Darker green on hover, adjust as needed */
   }
