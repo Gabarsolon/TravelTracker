@@ -5,11 +5,13 @@ import java.util.List;
 import com.bucketlist.destinations.exception.NotFoundException;
 import com.bucketlist.destinations.exception.ResourceNotFoundException;
 import com.bucketlist.destinations.model.Destination;
+import com.bucketlist.destinations.model.UserVotes;
 import com.bucketlist.destinations.model.Vote;
 import com.bucketlist.destinations.service.BucketListService;
 import com.bucketlist.destinations.service.DestinationService;
 
 
+import com.bucketlist.destinations.service.UserVotesService;
 import jakarta.transaction.Transactional;
 import com.bucketlist.destinations.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +27,15 @@ public class DestinationController {
     private final BucketListService bucketListService;
     private final VoteService voteService;
 
+    private final UserVotesService userVotesService;
+
     @Autowired
-    public DestinationController(DestinationService destinationService, BucketListService bucketListService, VoteService voteService) {
+    public DestinationController(DestinationService destinationService, BucketListService bucketListService,
+                                 VoteService voteService, UserVotesService userVotesService) {
         this.destinationService = destinationService;
         this.bucketListService = bucketListService;
         this.voteService = voteService;
+        this.userVotesService = userVotesService;
     }
 
     @PostMapping("/add/{userId}")
@@ -142,5 +148,25 @@ public class DestinationController {
     public ResponseEntity<List<Vote>> getDestinationVotes(@PathVariable Long destinationId) {
         List<Vote> allDestinationVotes = voteService.getAllDestinationVotes(destinationId);
         return new ResponseEntity<>(allDestinationVotes, HttpStatus.OK);
+    }
+
+    @PutMapping("/voteDestination/{destinationId}/{month}")
+    public ResponseEntity<Object> voteDestination(@PathVariable Long destinationId, @PathVariable Long month) {
+        try {
+            var voteId = voteService.getVoteByDestinationIdAndMonth(destinationId, month).getVoteId();
+            Long userId = Long.valueOf(1); // must be changed after the login is implemented
+
+            userVotesService.existsUserVotes(userId, voteId); // validates the voting
+
+            UserVotes uv = new UserVotes(userId, voteId);
+            userVotesService.addUserVotes(uv);
+            Vote updatedVote = voteService.updateVoteNumber(voteId);
+
+            return new ResponseEntity<>(updatedVote, HttpStatus.OK);
+        } catch (ResourceNotFoundException exception) {
+            return new ResponseEntity<>("Vote not found", HttpStatus.NOT_FOUND);
+        } catch (UnsupportedOperationException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }   

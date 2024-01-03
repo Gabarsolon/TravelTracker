@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface VoteRepository extends JpaRepository<Vote, Long> {
     List<Vote> findDestinationByDestinationId(Long destinationId);
+
+    Vote findVoteByDestinationIdAndMonth(Long destinationId, Long month);
 }
