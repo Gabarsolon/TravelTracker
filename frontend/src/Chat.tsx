@@ -425,6 +425,7 @@ const Chat: React.FC = () => {
                                     setChatResponseTextBox(e.target.value);
                                     setHasChanges(true);
                                 }}
+                                readOnly
                             />
                         <Button
                             className="add-button"
