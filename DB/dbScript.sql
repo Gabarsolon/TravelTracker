@@ -223,3 +223,47 @@ INSERT INTO "Vote" (destination_id, month, number) VALUES
 (3, 12, 22),
 (4, 12, 10),
 (5, 12, 45);
+
+
+-- BS-28 #1 START
+
+ALTER TABLE "Destination"
+DROP CONSTRAINT IF EXISTS destination_name_unq,
+ADD CONSTRAINT destination_name_unq UNIQUE(destination_name, destination_city);
+
+ALTER TABLE "BucketList"
+ADD description VARCHAR(255);
+
+SELECT * FROM "BucketList";
+
+-- BS-28 #1 DONE
+
+
+-- BS-28 #2 START
+
+ALTER TABLE "BucketList"
+ADD destination_in_list_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL; -- we need this for sorting the data
+
+-- BS-28 #2 DONE
+
+
+-- BS-28 #3 START
+
+ALTER TABLE "BucketList"
+DROP CONSTRAINT IF EXISTS "BucketList_destination_id_fkey",
+ADD CONSTRAINT "BucketList_destination_id_fkey"
+FOREIGN KEY (destination_id) REFERENCES "Destination" (destination_id) ON DELETE CASCADE;
+
+ALTER TABLE "TipsAndTricks"
+DROP CONSTRAINT IF EXISTS "TipsAndTricks_destination_id_fkey",
+ADD CONSTRAINT "TipsAndTricks_destination_id_fkey"
+FOREIGN KEY (destination_id) REFERENCES "Destination" (destination_id) ON DELETE CASCADE;
+
+ALTER TABLE "Vote"
+DROP CONSTRAINT IF EXISTS "Vote_destination_id_fkey",
+ADD CONSTRAINT "Vote_destination_id_fkey"
+FOREIGN KEY (destination_id) REFERENCES "Destination" (destination_id) ON DELETE CASCADE;
+
+-- BS-28 #3 DONE
+
+
