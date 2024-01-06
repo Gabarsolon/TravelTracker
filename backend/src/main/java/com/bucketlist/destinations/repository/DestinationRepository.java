@@ -24,6 +24,7 @@ public interface DestinationRepository extends JpaRepository<Destination, Long> 
              "WHERE bl.user_id = ?1\n" +
              "AND (d.destination_country ILIKE %?2% \n" +
              "AND d.destination_city ILIKE %?3%\n" +
-             "AND d.destination_name ILIKE %?4%);", nativeQuery = true)
+             "AND d.destination_name ILIKE %?4%)\n" +
+             "ORDER BY bl.destination_in_list_id", nativeQuery = true)
      List<Destination> findDestinationsForGivenUserId(Long userId, String country, String city, String name, Pageable pageable);
 }
