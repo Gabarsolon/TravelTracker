@@ -77,25 +77,7 @@ html, body {
 .addButtontip:hover {
     background-color:  #b19a82; /* Darker green on hover, adjust as needed */
 }
-.addButtontip::after {
-    content: "Add a tip";
-    position: absolute;
-    top: 93%;
-    left: 35%;
-    transform: translateX(-50%);
-    background-color: #d6c4b0;
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 14px;
-    color: rgb(0, 0, 0);
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-}
 
-.addButtontip:hover::after {
-    opacity: 1;
-}
 
 .tips-list-container {
     margin-top: 20px;

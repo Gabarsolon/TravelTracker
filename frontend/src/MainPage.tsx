@@ -1,6 +1,7 @@
 import React from 'react';
 import BucketList from './BucketList';
 import PublicList from './PublicList';
+import Tooltip from '@mui/material/Tooltip';
 import './mainPage.css';
 
 const MainPage: React.FC = () => {
@@ -12,7 +13,9 @@ const MainPage: React.FC = () => {
         </div>
       </div>
       <div>
-      <button className="questionButton">?</button>
+      <Tooltip title="You can drag and drop the items to add them to your list!" arrow>
+          <button className="questionButton">?</button>
+        </Tooltip>
       </div>
       <div className="right-section-bucket">
       <div className="right-section-bucket-content">

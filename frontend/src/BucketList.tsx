@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Pagination } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 
 interface Destination {
     destinationCountry: string;
@@ -233,9 +234,11 @@ const BucketList: React.FC = () => {
         <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
             <div className='button-and-title'>
                 <div className='button-div'>
+                <Tooltip title="Add a destination" arrow>
                     <button className="addButton" onClick={() => setShowAddModal(true)}>
-                        +
+                         +
                     </button>
+                </Tooltip>
                 </div>
                 <h2 className='titleOfList' style={{margin: '0 auto'}}>Bucket List</h2>
 
