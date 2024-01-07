@@ -223,3 +223,57 @@ INSERT INTO "Vote" (destination_id, month, number) VALUES
 (3, 12, 22),
 (4, 12, 10),
 (5, 12, 45);
+
+
+-- BS-28 #1 START
+
+ALTER TABLE "Destination"
+DROP CONSTRAINT IF EXISTS destination_name_unq,
+ADD CONSTRAINT destination_name_unq UNIQUE(destination_name, destination_city);
+
+ALTER TABLE "BucketList"
+ADD description VARCHAR(255);
+
+UPDATE "BucketList"
+SET description = 'Bucharest is the capital and largest city of Romania. It is described as the cultural, financial, entertainment, and media center in the country with a significant influence in Eastern and Southeastern Europe as well.'
+WHERE destination_in_list_id = 1
+
+UPDATE "BucketList"
+SET description = 'Straddling the banks of the River Isar north of the Alps, Munich is the seat of the Bavarian administrative region of Upper Bavaria, while being the most densely populated municipality in Germany with 4,500 people per km2.'
+WHERE destination_in_list_id = 4
+
+ALTER TABLE "BucketList"
+DROP CONSTRAINT IF EXISTS user_and_destination_id_unq,
+ADD CONSTRAINT user_and_destination_id_unq UNIQUE(user_id, destination_id);
+
+SELECT * FROM "BucketList";
+
+-- BS-28 #1 DONE
+
+
+-- BS-28 #2 START
+
+ALTER TABLE "BucketList"
+ADD destination_in_list_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL; -- we need this for sorting the data
+
+-- BS-28 #2 DONE
+
+
+-- BS-28 #3 START
+
+ALTER TABLE "BucketList"
+DROP CONSTRAINT IF EXISTS "BucketList_destination_id_fkey",
+ADD CONSTRAINT "BucketList_destination_id_fkey"
+FOREIGN KEY (destination_id) REFERENCES "Destination" (destination_id) ON DELETE CASCADE;
+
+ALTER TABLE "TipsAndTricks"
+DROP CONSTRAINT IF EXISTS "TipsAndTricks_destination_id_fkey",
+ADD CONSTRAINT "TipsAndTricks_destination_id_fkey"
+FOREIGN KEY (destination_id) REFERENCES "Destination" (destination_id) ON DELETE CASCADE;
+
+ALTER TABLE "Vote"
+DROP CONSTRAINT IF EXISTS "Vote_destination_id_fkey",
+ADD CONSTRAINT "Vote_destination_id_fkey"
+FOREIGN KEY (destination_id) REFERENCES "Destination" (destination_id) ON DELETE CASCADE;
+
+-- BS-28 #3 DONE
