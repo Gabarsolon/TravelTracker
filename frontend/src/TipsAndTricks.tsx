@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Tooltip from '@mui/material/Tooltip';
 
 interface Tip {
     tipsAndTrickId: number;
@@ -77,9 +78,11 @@ const TipsAndTricksList: React.FC<TipsAndTricksListProps> = ({ destinationId }) 
                     ))}
                 </ul>
             </div>
-            <button className="addButtontip" onClick={() => setShowAddDialog(true)}>
-                +
-            </button>
+            <Tooltip title="Add a tip" arrow>
+          <button className="addButtontip" onClick={() => setShowAddDialog(true)}>
+            +
+          </button>
+        </Tooltip>
 
             {showAddDialog && (
                 <>
