@@ -18,7 +18,7 @@ public interface DestinationRepository extends JpaRepository<Destination, Long> 
 
      List<Destination> findDestinationByIsPublicAndDestinationCountryContainingIgnoreCase(boolean isPublic, String destinationCountry, Pageable pageable);
 
-     @Query(value = "SELECT d.destination_id, d.destination_country, d.destination_city, d.is_public, d.description, d.destination_name\n" +
+     @Query(value = "SELECT d.destination_id, d.destination_country, d.destination_city, d.is_public, bl.description, d.destination_name\n" +
              "FROM \"Destination\" d\n" +
              "INNER JOIN \"BucketList\" bl ON d.destination_id = bl.destination_id\n" +
              "WHERE bl.user_id = ?1\n" +
@@ -27,4 +27,6 @@ public interface DestinationRepository extends JpaRepository<Destination, Long> 
              "AND d.destination_name ILIKE %?4%)\n" +
              "ORDER BY bl.destination_in_list_id", nativeQuery = true)
      List<Destination> findDestinationsForGivenUserId(Long userId, String country, String city, String name, Pageable pageable);
+
+     Destination findDestinationByDestinationNameAndDestinationCity(String destinationName, String destinationCity);
 }
