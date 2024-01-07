@@ -18,10 +18,9 @@ public class BucketListService {
             // If the entry exists, you can handle it according to your requirements
             // For now, let's print a message
             throw new RuntimeException("Destination already exists in your bucket list!");
-        } else {
-            // If the entry doesn't exist, create a new one
-            bucketListRepository.save(new BucketList(new BucketList.BucketListPK(userId, destinationId), description));
         }
+        // If the entry doesn't exist, create a new one
+        bucketListRepository.save(new BucketList(new BucketList.BucketListPK(userId, destinationId), description));
     }
 
     public boolean isDestinationInUserBucketList(Long userId, Long destinationId) {
