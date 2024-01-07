@@ -225,8 +225,8 @@ const BucketList: React.FC = () => {
 
     const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         console.log("handleFilterChange: " + "currentPage" + currentPage + " totalPages: " + totalPages, + " count: " + countDestinations)
-
         setFilterAttribute(event.target.value);
+        setCurrentPage(1);
     };
 
     return (
