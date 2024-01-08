@@ -354,8 +354,19 @@ const BucketList: React.FC = () => {
                         {bucketList.map((destination, index) => (
                             <li key={index} style={listItemStyle}>
                                 <div style={entityActionsStyle} className="entity-actions">
-                                    <DeleteIcon onClick={() => handleDeleteDestination(destination)} className="delete-icon"/>
-                                    <EditIcon onClick={() => handleEditDestination(destination)} className="edit-icon"/>
+                                    {destination.public ? (
+                                        <>
+                                            <DeleteIcon onClick={() => handleDeleteDestination(destination)} className="delete-icon" />
+                                        <Tooltip title="Edit is disabled for public destinations" arrow>
+                                            <EditIcon className="edit-icon" style={{ cursor: 'not-allowed' }} />
+                                        </Tooltip>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <DeleteIcon onClick={() => handleDeleteDestination(destination)} className="delete-icon" />
+                                            <EditIcon onClick={() => handleEditDestination(destination)} className="edit-icon" />
+                                        </>
+                                    )}
                                 </div>
                                 <strong style={{
                                     fontSize: '1.2em',
