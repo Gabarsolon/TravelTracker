@@ -134,7 +134,7 @@ const BucketList: React.FC = () => {
             alert('Destination with the same name and city already exists in the Bucket List.');
             return;
         }
-        
+
         try {
             const response = await fetch('http://localhost:8080/api/v1/destination/add/1', {
                 method: 'POST',
@@ -393,9 +393,9 @@ const BucketList: React.FC = () => {
                                     fontStyle: 'oblique'
                                 }}>{destination.destinationName}</strong><br/>
                                 {destination.destinationCity}, {destination.destinationCountry}<br/>
-                                {/* <i style={{fontSize: '0.8em'}}>
+                                <i style={{fontSize: '0.8em'}}>
                                     {destination.description.length > 50 ? `${destination.description.slice(0, 50)}...` : destination.description}
-                                </i> */}
+                                </i>
                             </li>
                         ))}
                     </ul>
