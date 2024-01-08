@@ -1,3 +1,4 @@
+-- First implementation
 CREATE TABLE "User" (
    user_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,
 	email VARCHAR(100) NOT NULL,
@@ -20,8 +21,9 @@ CREATE TABLE "BucketList" (
    destination_id INT REFERENCES "Destination"(destination_id)
 );
 
+-- insert values in the tables
 INSERT INTO "User"(email, username, password) VALUES ('user1@gmail.com', 'user1', 'user1');
-SELECT * FROM "User";
+-- SELECT * FROM "User";
 
 INSERT INTO "Destination" (destination_country, destination_city, is_public)
 VALUES
@@ -30,18 +32,19 @@ VALUES
 ('Japan', 'Tokyo', true),
 ('Germany', 'Munich', true),
 ('USA', 'Los Angeles', true);
-SELECT * FROM "Destination";
+-- SELECT * FROM "Destination";
 
 INSERT INTO "BucketList" VALUES
 (1, 1),
 (1, 4);
-SELECT * FROM "BucketList";
+-- SELECT * FROM "BucketList";
 
+-- added description column in destination table
 ALTER TABLE "Destination"
 ADD description VARCHAR(255);
 
-SELECT * FROM "Destination";
-
+-- SELECT * FROM "Destination";
+-- added descriptions
 UPDATE "Destination" 
 SET description = 'Bucharest is the capital and largest city of Romania. It is described as the cultural, financial, entertainment, and media center in the country with a significant influence in Eastern and Southeastern Europe as well.'
 WHERE destination_id = 1;
@@ -63,11 +66,12 @@ SET description = 'Los Angeles is the financial and cultural center of the South
 WHERE destination_id = 5;
 
 -- add destination_name field to Destionation table
-SELECT * FROM "Destination";
+-- SELECT * FROM "Destination";
 
 ALTER TABLE "Destination"
 ADD COLUMN destination_name VARCHAR(255);
 
+-- add descriptions for the destinations
 UPDATE "Destination" 
 SET destination_name = 'Casa poporului'
 WHERE destination_id = 1;
@@ -88,16 +92,10 @@ UPDATE "Destination"
 SET destination_name = 'Universal Studios Hollywood'
 WHERE destination_id = 5;
 
--- add unique constraint for destination_name column
-ALTER TABLE "Destination"
-ADD CONSTRAINT destination_name_unq UNIQUE(destination_name);
-
--- test command for the unique constraint
-SELECT * FROM "Destination"
 INSERT INTO "Destination" (destination_country, destination_city, is_public, description, destination_name)
 VALUES ('Romania', 'Bucharest', true, 'desc', 'Casa poporului');
---
 
+-- Database updated (added new tables)
 CREATE TABLE "TipsAndTricks"(
 	tips_and_trick_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,
 	user_id INT REFERENCES "User"(user_id),
@@ -141,9 +139,9 @@ INSERT INTO "User_Votes" (user_id, vote_id) VALUES
 (1, 2),
 (1, 3);
 
-SELECT * FROM "TipsAndTricks"
-SELECT * FROM "Vote"
-SELECT * FROM "User_Votes"
+-- SELECT * FROM "TipsAndTricks"
+-- SELECT * FROM "Vote"
+-- SELECT * FROM "User_Votes"
 
 -- inserting votes for each destination we have at the moment, with a hardcoded number
 
@@ -226,14 +224,17 @@ INSERT INTO "Vote" (destination_id, month, number) VALUES
 
 
 -- BS-28 #1 START
-
+-- added new constraint
 ALTER TABLE "Destination"
 DROP CONSTRAINT IF EXISTS destination_name_unq,
 ADD CONSTRAINT destination_name_unq UNIQUE(destination_name, destination_city);
 
+-- added description for each bucket list item so that if a user edits a private destination's description only he can see it
 ALTER TABLE "BucketList"
 ADD description VARCHAR(255);
 
+
+-- added descrpiption for existing entries in oreder to be able to fetch data
 UPDATE "BucketList"
 SET description = 'Bucharest is the capital and largest city of Romania. It is described as the cultural, financial, entertainment, and media center in the country with a significant influence in Eastern and Southeastern Europe as well.'
 WHERE destination_in_list_id = 1
@@ -242,25 +243,28 @@ UPDATE "BucketList"
 SET description = 'Straddling the banks of the River Isar north of the Alps, Munich is the seat of the Bavarian administrative region of Upper Bavaria, while being the most densely populated municipality in Germany with 4,500 people per km2.'
 WHERE destination_in_list_id = 4
 
+-- added constraint: user cannot have the same destination in his bucket list twice
 ALTER TABLE "BucketList"
 DROP CONSTRAINT IF EXISTS user_and_destination_id_unq,
 ADD CONSTRAINT user_and_destination_id_unq UNIQUE(user_id, destination_id);
 
-SELECT * FROM "BucketList";
+-- SELECT * FROM "BucketList";
 
 -- BS-28 #1 DONE
 
 
 -- BS-28 #2 START
 
+-- added ids for each bucket list entry need this for sorting the data
 ALTER TABLE "BucketList"
-ADD destination_in_list_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL; -- we need this for sorting the data
+ADD destination_in_list_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL;
 
 -- BS-28 #2 DONE
 
 
 -- BS-28 #3 START
 
+-- added cascade for when a destination is deleted
 ALTER TABLE "BucketList"
 DROP CONSTRAINT IF EXISTS "BucketList_destination_id_fkey",
 ADD CONSTRAINT "BucketList_destination_id_fkey"
