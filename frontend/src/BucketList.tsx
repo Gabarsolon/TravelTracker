@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Pagination } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import Tooltip from '@mui/material/Tooltip';
 
 interface Destination {
+    destinationId?: number;
     destinationCountry: string;
     destinationCity: string;
     public: boolean;
@@ -10,10 +13,12 @@ interface Destination {
     destinationName: string;
 }
 
+
 const BucketList: React.FC = () => {
     const [bucketList, setBucketList] = useState<Destination[]>([]);
     const [showAddModal, setShowAddModal] = useState<boolean>(false);
     const [newDestination, setNewDestination] = useState<Destination>({
+        destinationId: -1,
         destinationCountry: '',
         destinationCity: '',
         public: false,
@@ -26,6 +31,8 @@ const BucketList: React.FC = () => {
     const [totalPages, setTotalPages] = useState<number>(10);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [countDestinations, setCountDestinations] = useState<number>(0);
+    const [editingDestination, setEditingDestination] = useState<Destination | null>(null);
+    const [showEditModal, setShowEditModal] = useState<boolean>(false);
    // const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -118,30 +125,30 @@ const BucketList: React.FC = () => {
             });
 
             if (response.ok) {
+                const responseData = await response.json();
+
                 // Add the new destination to the bucket list
-                setBucketList(prevList => [...prevList, newDestination]);
+                setBucketList((prevList) => [...prevList, responseData]);
+
                 setShowAddModal(false);
+
                 // Clear the form after adding a destination
                 setNewDestination({
-
                     destinationCountry: '',
                     destinationCity: '',
                     public: false,
                     description: '',
                     destinationName: '',
                 });
-               // const updatedCount = countDestinations + 1;
-                setCountDestinations(prevCount => prevCount + 1);
+
+                setCountDestinations((prevCount) => prevCount + 1);
                 const updatedTotalPages = Math.ceil((countDestinations + 1) / pageSize);
-               // const updatedTotalPages = Math.ceil(updatedCount / pageSize);
                 setTotalPages(updatedTotalPages);
 
                 // Set the current page to the newly calculated total pages
                 setCurrentPage(updatedTotalPages);
-
-
             } else {
-                console.error('Error adding destinationnn:', response.statusText);
+                console.error('Error adding destination:', response.statusText);
             }
         } catch (error) {
             console.error('Error adding destination:', error);
@@ -230,6 +237,87 @@ const BucketList: React.FC = () => {
         setCurrentPage(1);
     };
 
+    const handleDeleteDestination = async (destinationToDelete: Destination) => {
+        const confirmed = window.confirm('Are you sure you want to delete this destination?');
+
+        if (confirmed) {
+            try {
+                // Make API call to delete the destination
+                const response = await fetch(`http://localhost:8080/api/v1/destination/delete/1/${destinationToDelete.destinationId}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    // Update the state to remove the deleted destination
+                    setBucketList((prevList) => prevList.filter((item) => item.destinationId !== destinationToDelete.destinationId));
+
+                    // Update the count and total pages
+                    setCountDestinations((prevCount) => prevCount - 1);
+                    const updatedTotalPages = Math.ceil((countDestinations - 1) / pageSize);
+                    setTotalPages(updatedTotalPages);
+
+                    // If the deleted item was the last one on the page, go to the previous page
+                    if (bucketList.length === 1 && currentPage > 1) {
+                        setCurrentPage((prevPage) => prevPage - 1);
+                    }
+                } else {
+                    console.error('Error deleting destination:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error deleting destination:', error);
+            }
+        }
+    };
+
+    const handleEditDestination = (destination: Destination) => {
+        setEditingDestination(destination);
+        setShowEditModal(true);
+    };
+
+    const closeEditForm = () => {
+        setEditingDestination(null);
+        setShowEditModal(false);
+    };
+
+    const handleSaveEdit = async () => {
+        if (editingDestination) {
+            try {
+                // Make API call to update the destination
+                const response = await fetch(`http://localhost:8080/api/v1/destination/update/${editingDestination.destinationId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(editingDestination),
+                });
+
+                if (response.ok) {
+                    // Update the state to reflect the changes
+                    setBucketList((prevList) =>
+                        prevList.map((item) => (item.destinationId === editingDestination.destinationId ? editingDestination : item))
+                    );
+                    closeEditForm();
+                } else {
+                    console.error('Error updating destination:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error updating destination:', error);
+            }
+        }
+    };
+
+    const listItemStyle: React.CSSProperties = {
+        position: 'relative',
+        // Add any additional styling for list item
+    };
+
+    const entityActionsStyle: React.CSSProperties = {
+        position: 'absolute',
+        top: '5px',
+        right: '5px',
+        display: 'flex',
+    };
+
     return (
         <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
             <div className='button-and-title'>
@@ -264,7 +352,11 @@ const BucketList: React.FC = () => {
                 ) : (
                     <ul>
                         {bucketList.map((destination, index) => (
-                            <li key={index}>
+                            <li key={index} style={listItemStyle}>
+                                <div style={entityActionsStyle} className="entity-actions">
+                                    <DeleteIcon onClick={() => handleDeleteDestination(destination)} className="delete-icon"/>
+                                    <EditIcon onClick={() => handleEditDestination(destination)} className="edit-icon"/>
+                                </div>
                                 <strong style={{
                                     fontSize: '1.2em',
                                     fontStyle: 'oblique'
@@ -273,7 +365,6 @@ const BucketList: React.FC = () => {
                                 <i style={{fontSize: '0.8em'}}>
                                     {destination.description.length > 50 ? `${destination.description.slice(0, 50)}...` : destination.description}
                                 </i>
-                                <li></li>
                             </li>
                         ))}
                     </ul>
@@ -334,6 +425,49 @@ const BucketList: React.FC = () => {
                         </label>
                         <button onClick={handleAddDestination}>Add Destination</button>
                         <button onClick={() => setShowAddModal(false)}>Cancel</button>
+                    </div>
+                </>
+            )}
+            {showEditModal && (
+                <>
+                    <div className="overlay" onClick={closeEditForm} />
+                    <div className="modal">
+                        <h4 className="EditTitle">Edit destination</h4>
+                        <label>
+                            Name:
+                            <input
+                                type="text"
+                                value={editingDestination?.destinationName || ''}
+                                onChange={(e) => setEditingDestination((prev) => ({ ...prev!, destinationName: e.target.value }))}
+                            />
+                        </label>
+                        <label>
+                            Country:
+                            <input
+                                type="text"
+                                value={editingDestination?.destinationCountry || ''}
+                                onChange={(e) => setEditingDestination((prev) => ({ ...prev!, destinationCountry: e.target.value }))}
+                            />
+                        </label>
+                        <label>
+                            City:
+                            <input
+                                type="text"
+                                value={editingDestination?.destinationCity || ''}
+                                onChange={(e) => setEditingDestination((prev) => ({ ...prev!, destinationCity: e.target.value }))}
+                            />
+                        </label>
+                        <label>
+                            Description:
+                            <input
+                                type="text"
+                                value={editingDestination?.description || ''}
+                                onChange={(e) => setEditingDestination((prev) => ({ ...prev!, description: e.target.value }))}
+                            />
+                        </label>
+                        {/* Add more similar inputs for other destination properties */}
+                        <button onClick={handleSaveEdit}>Save</button>
+                        <button onClick={closeEditForm}>Cancel</button>
                     </div>
                 </>
             )}

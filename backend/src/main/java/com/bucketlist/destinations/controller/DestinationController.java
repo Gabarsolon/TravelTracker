@@ -72,7 +72,8 @@ public class DestinationController {
                 return new ResponseEntity<>("Destination already in user's bucket list", HttpStatus.BAD_REQUEST);
             }
         }
-        return new ResponseEntity<>("Destination added successfully to bucket list", HttpStatus.CREATED);
+        return new ResponseEntity<>(savedDestination, HttpStatus.CREATED);
+        //return new ResponseEntity<>("Destination added successfully to bucket list", HttpStatus.CREATED);
     }
 
     @GetMapping("/allDestinations")

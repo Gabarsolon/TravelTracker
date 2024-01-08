@@ -122,7 +122,7 @@
   .addButton:hover {
     background-color:  #b19a82; /* Darker green on hover, adjust as needed */
   }
- 
+
 
   .questionButton {
     background-color:  #f5d6b8; /* Green background color, adjust as needed */
@@ -139,7 +139,7 @@
   .questionButton:hover {
     background-color:  #b19a82; /* Darker green on hover, adjust as needed */
   }
-  
+
 
   .modal {
     position: fixed;
@@ -206,6 +206,22 @@
   .modal button:hover {
     background-color: #b19a82;
   }
-  
 
- 
+  .entity-actions .delete-icon {
+    cursor: pointer;
+    margin-right: 5px;
+  }
+
+  .entity-actions .delete-icon:hover {
+    color: #dc1c1c;
+  }
+
+  .entity-actions .edit-icon {
+    cursor: pointer;
+    margin-right: 5px;
+  }
+
+  .entity-actions .edit-icon:hover {
+    color: #969696;
+  }
+
