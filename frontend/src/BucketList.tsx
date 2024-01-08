@@ -115,6 +115,26 @@ const BucketList: React.FC = () => {
     // }, [searchTerm, filterAttribute]);
 
     const handleAddDestination = async () => {
+        // Check for empty fields in the new destination
+        if (
+            !newDestination.destinationName ||
+            !newDestination.destinationCountry ||
+            !newDestination.destinationCity ||
+            !newDestination.description
+        ) {
+            alert('Please fill in all fields before adding the destination.');
+            return;
+        }
+        const isDuplicate = bucketList.some(
+            (item) =>
+                item.destinationName.toLowerCase() === newDestination.destinationName.toLowerCase() &&
+                item.destinationCity.toLowerCase() === newDestination.destinationCity.toLowerCase()
+        );
+        if (isDuplicate) {
+            alert('Destination with the same name and city already exists in the Bucket List.');
+            return;
+        }
+        
         try {
             const response = await fetch('http://localhost:8080/api/v1/destination/add/1', {
                 method: 'POST',
@@ -373,9 +393,9 @@ const BucketList: React.FC = () => {
                                     fontStyle: 'oblique'
                                 }}>{destination.destinationName}</strong><br/>
                                 {destination.destinationCity}, {destination.destinationCountry}<br/>
-                                <i style={{fontSize: '0.8em'}}>
+                                {/* <i style={{fontSize: '0.8em'}}>
                                     {destination.description.length > 50 ? `${destination.description.slice(0, 50)}...` : destination.description}
-                                </i>
+                                </i> */}
                             </li>
                         ))}
                     </ul>
