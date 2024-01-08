@@ -71,10 +71,12 @@ const PublicList: React.FC = () => {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    setCurrentPage(1);
   };
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterAttribute(event.target.value);
+    setCurrentPage(1);
   };
 
   const handleDragStart = (e: React.DragEvent<HTMLLIElement>, destination: Destination) => {
