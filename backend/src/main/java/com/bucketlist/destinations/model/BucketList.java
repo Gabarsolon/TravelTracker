@@ -45,8 +45,18 @@ public class BucketList {
     @EmbeddedId
     private BucketListPK bucketListPK;
 
-    public BucketList(BucketListPK bucketListPK) {
+    @Column(name = "description")
+    private String description;
+//
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "destination_in_list_id", nullable = false)
+//    private Long destinationInListId;
+
+
+    public BucketList(BucketListPK bucketListPK, String description) {
         this.bucketListPK = bucketListPK;
+        this.description = description;
     }
 
     public BucketList() {

@@ -126,4 +126,8 @@ public class DestinationService {
             throw new NotFoundException("Destination with ID: " + destinationId + " not found.");
         }
     }
+
+    public Destination findDestinationByNameAndCity(String destinationName, String destinationCountry){
+        return destinationRepository.findDestinationByDestinationNameAndDestinationCity(destinationName, destinationCountry);
+    }
 }

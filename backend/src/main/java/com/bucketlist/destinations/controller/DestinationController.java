@@ -15,6 +15,7 @@ import com.bucketlist.destinations.service.UserVotesService;
 import jakarta.transaction.Transactional;
 import com.bucketlist.destinations.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,9 +41,37 @@ public class DestinationController {
 
     @PostMapping("/add/{userId}")
     public ResponseEntity<Object> addDestination(@RequestBody Destination destination, @PathVariable Long userId) {
-        Destination savedDestination = destinationService.addDestination(destination, userId);
-        bucketListService.linkDestinationToUser(userId, savedDestination.getDestinationId());
-        voteService.addDefaultDestinationVotes(destination.getDestinationId());
+        Destination savedDestination = null;
+        try {
+            savedDestination = destinationService.addDestination(destination, userId);
+        }
+        catch (DataIntegrityViolationException e){
+            String errorMessage = e.getMostSpecificCause().getMessage();
+            System.out.println(ResponseEntity.status(400).body("Error: " + errorMessage));
+        }
+        System.out.println(savedDestination);
+        if ( savedDestination != null) {
+            System.out.println("Im here!");
+            bucketListService.linkDestinationToUser(userId, savedDestination.getDestinationId(), savedDestination.getDescription());
+            voteService.addDefaultDestinationVotes(destination.getDestinationId());
+        }
+        else {
+            try {
+                Destination existingDestination = destinationService.findDestinationByNameAndCity(destination.getDestinationName(), destination.getDestinationCity());
+                System.out.println(existingDestination);
+                bucketListService.linkDestinationToUser(userId, existingDestination.getDestinationId(), destination.getDescription());
+            }
+            catch (DataIntegrityViolationException e){
+                String errorMessage = e.getMostSpecificCause().getMessage();
+                System.out.println(ResponseEntity.status(400).body("Error: " + errorMessage));
+                return new ResponseEntity<>("Destination already in user's bucket list", HttpStatus.BAD_REQUEST);
+            }
+            catch (RuntimeException e){
+                String errorMessage = e.getMessage();
+                System.out.println(ResponseEntity.status(400).body("Error: " + errorMessage));
+                return new ResponseEntity<>("Destination already in user's bucket list", HttpStatus.BAD_REQUEST);
+            }
+        }
         return new ResponseEntity<>("Destination added successfully to bucket list", HttpStatus.CREATED);
     }
 
@@ -80,7 +109,7 @@ public class DestinationController {
         }
 
         //add the destination to the user's bucket list
-        bucketListService.linkDestinationToUser(userId, destinationId);
+        bucketListService.linkDestinationToUser(userId, destinationId, destination.getDescription());
         return new ResponseEntity<>("Destination added successfully to bucket list", HttpStatus.CREATED);
     }
 
