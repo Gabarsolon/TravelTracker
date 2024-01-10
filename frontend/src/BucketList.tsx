@@ -3,6 +3,14 @@ import { Pagination } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Tooltip from '@mui/material/Tooltip';
+import Snackbar from '@mui/material/Snackbar';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
 interface Destination {
     destinationId?: number;
@@ -12,6 +20,7 @@ interface Destination {
     description: string;
     destinationName: string;
 }
+
 
 
 const BucketList: React.FC = () => {
@@ -33,6 +42,13 @@ const BucketList: React.FC = () => {
     const [countDestinations, setCountDestinations] = useState<number>(0);
     const [editingDestination, setEditingDestination] = useState<Destination | null>(null);
     const [showEditModal, setShowEditModal] = useState<boolean>(false);
+    const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
+    const [deleteSuccess, setDeleteSuccess] = useState<boolean>(false);
+    const [addError, setAddError] = useState<boolean>(false);
+    const [fillError, setfillError] = useState<boolean>(false);
+    const [addErrorDuplicate, setAddErrorDuplicate] = useState<boolean>(false);
+    const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState<boolean>(false);
+    const [destinationToDelete, setDestinationToDelete] = useState<Destination | null>(null);
    // const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -113,7 +129,7 @@ const BucketList: React.FC = () => {
     //
     //     fetchData();
     // }, [searchTerm, filterAttribute]);
-
+    const [addSuccess, setAddSuccess] = useState<boolean>(false);
     const handleAddDestination = async () => {
         // Check for empty fields in the new destination
         if (
@@ -122,7 +138,8 @@ const BucketList: React.FC = () => {
             !newDestination.destinationCity ||
             !newDestination.description
         ) {
-            alert('Please fill in all fields before adding the destination.');
+            // alert('Please fill in all fields before adding the destination.');
+            setfillError(true);
             return;
         }
         const isDuplicate = bucketList.some(
@@ -131,7 +148,8 @@ const BucketList: React.FC = () => {
                 item.destinationCity.toLowerCase() === newDestination.destinationCity.toLowerCase()
         );
         if (isDuplicate) {
-            alert('Destination with the same name and city already exists in the Bucket List.');
+            // alert('Destination with the same name and city already exists in the Bucket List.');
+            setAddErrorDuplicate(true);
             return;
         }
 
@@ -146,6 +164,7 @@ const BucketList: React.FC = () => {
 
             if (response.ok) {
                 const responseData = await response.json();
+                setAddSuccess(true);
 
                 // Add the new destination to the bucket list
                 setBucketList((prevList) => [...prevList, responseData]);
@@ -206,7 +225,8 @@ const BucketList: React.FC = () => {
 
                     if (!response.ok) {
                         if (response.status === 400) {
-                            alert('This item is already in your Bucket List!');
+                            // alert('This item is already in your Bucket List!');
+                            setAddError(true);
                         } else {
                             console.error('Error notifying backend:', response.statusText);
                         }
@@ -219,6 +239,7 @@ const BucketList: React.FC = () => {
                         }).then(response => response.json());
 
                         setBucketList(updatedData);
+                        setAddSuccess(true);
 
                         setCountDestinations(prevCount => prevCount + 1);
                         const updatedTotalPages = Math.ceil((countDestinations + 1) / pageSize);
@@ -236,7 +257,8 @@ const BucketList: React.FC = () => {
                     console.error('Error notifying backend:', error);
                 }
             } else {
-                alert('This item is already in your Bucket List!');
+                // 
+                setAddError(true);
             }
         };
 
@@ -257,26 +279,32 @@ const BucketList: React.FC = () => {
         setCurrentPage(1);
     };
 
-    const handleDeleteDestination = async (destinationToDelete: Destination) => {
-        const confirmed = window.confirm('Are you sure you want to delete this destination?');
+    const openDeleteConfirmation = (destination: Destination) => {
+        setDestinationToDelete(destination);
+        setDeleteConfirmationOpen(true);
+    };
 
-        if (confirmed) {
+    const closeDeleteConfirmation = () => {
+        setDestinationToDelete(null);
+        setDeleteConfirmationOpen(false);
+    };
+
+    const handleDeleteDestination = async () => {
+        closeDeleteConfirmation();
+
+        if (destinationToDelete) {
             try {
-                // Make API call to delete the destination
                 const response = await fetch(`http://localhost:8080/api/v1/destination/delete/1/${destinationToDelete.destinationId}`, {
                     method: 'DELETE',
                 });
 
                 if (response.ok) {
-                    // Update the state to remove the deleted destination
                     setBucketList((prevList) => prevList.filter((item) => item.destinationId !== destinationToDelete.destinationId));
-
-                    // Update the count and total pages
                     setCountDestinations((prevCount) => prevCount - 1);
                     const updatedTotalPages = Math.ceil((countDestinations - 1) / pageSize);
                     setTotalPages(updatedTotalPages);
+                    setDeleteSuccess(true);
 
-                    // If the deleted item was the last one on the page, go to the previous page
                     if (bucketList.length === 1 && currentPage > 1) {
                         setCurrentPage((prevPage) => prevPage - 1);
                     }
@@ -316,6 +344,7 @@ const BucketList: React.FC = () => {
                     setBucketList((prevList) =>
                         prevList.map((item) => (item.destinationId === editingDestination.destinationId ? editingDestination : item))
                     );
+                    setUpdateSuccess(true);
                     closeEditForm();
                 } else {
                     console.error('Error updating destination:', response.statusText);
@@ -337,7 +366,12 @@ const BucketList: React.FC = () => {
         right: '5px',
         display: 'flex',
     };
-
+    const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+        props,
+        ref
+      ) {
+        return <MuiAlert elevation={6} variant="filled" ref={ref} {...props} />;
+      });
     return (
         <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
             <div className='button-and-title'>
@@ -376,14 +410,14 @@ const BucketList: React.FC = () => {
                                 <div style={entityActionsStyle} className="entity-actions">
                                     {destination.public ? (
                                         <>
-                                            <DeleteIcon onClick={() => handleDeleteDestination(destination)} className="delete-icon" />
+                                             <DeleteIcon onClick={() => openDeleteConfirmation(destination)} className="delete-icon" />
                                         <Tooltip title="Edit is disabled for public destinations" arrow>
                                             <EditIcon className="edit-icon" style={{ cursor: 'not-allowed' }} />
                                         </Tooltip>
                                         </>
                                     ) : (
                                         <>
-                                            <DeleteIcon onClick={() => handleDeleteDestination(destination)} className="delete-icon" />
+                                             <DeleteIcon onClick={() => openDeleteConfirmation(destination)} className="delete-icon" />
                                             <EditIcon onClick={() => handleEditDestination(destination)} className="edit-icon" />
                                         </>
                                     )}
@@ -500,8 +534,58 @@ const BucketList: React.FC = () => {
                         <button onClick={handleSaveEdit}>Save</button>
                         <button onClick={closeEditForm}>Cancel</button>
                     </div>
+            
                 </>
             )}
+             <Snackbar open={addSuccess} autoHideDuration={3000} onClose={() => setAddSuccess(false)}>
+            <Alert onClose={() => setAddSuccess(false)} severity="success">
+                The destination has been added successfully.
+            </Alert>
+        </Snackbar>
+        <Snackbar open={updateSuccess} autoHideDuration={3000} onClose={() => setUpdateSuccess(false)}>
+                <Alert onClose={() => setUpdateSuccess(false)} severity="success">
+                    The destination has been updated successfully.
+                </Alert>
+            </Snackbar>
+            <Snackbar open={deleteSuccess} autoHideDuration={3000} onClose={() => setDeleteSuccess(false)}>
+                <Alert onClose={() => setDeleteSuccess(false)} severity="success">
+                    The destination has been deleted successfully.
+                </Alert>
+            </Snackbar>
+            <Snackbar open={addError} autoHideDuration={3000} onClose={() => setAddError(false)}>
+                <Alert onClose={() => setAddError(false)} severity="error">
+                This item is already in your Bucket List!
+                </Alert>
+            </Snackbar>
+            <Snackbar open={addErrorDuplicate} autoHideDuration={3000} onClose={() => setAddErrorDuplicate(false)}>
+                <Alert onClose={() => setAddErrorDuplicate(false)} severity="error">
+                Destination with the same name and city already exists in the Bucket List.
+                </Alert>
+                </Snackbar>
+                <Snackbar open={fillError} autoHideDuration={3000} onClose={() => setfillError(false)}>
+                <Alert onClose={() => setfillError(false)} severity="error">
+                Please fill in all fields before adding the destination.
+                </Alert>
+                </Snackbar>  
+                {destinationToDelete && (
+                <Dialog open={deleteConfirmationOpen} onClose={closeDeleteConfirmation}>
+                    <DialogTitle style={{ textAlign: 'center', fontFamily: "'Quicksand', sans-serif" }}>Delete Destination</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText  style={{ fontFamily: "'Quicksand', sans-serif" }}>
+                            Are you sure you want to delete the destination <strong>{destinationToDelete.destinationName}</strong>?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={closeDeleteConfirmation} color="primary"  style={{ textAlign: 'center', fontFamily: "'Quicksand', sans-serif" }}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleDeleteDestination} color="primary" autoFocus  style={{ textAlign: 'center', fontFamily: "'Quicksand', sans-serif" }}>
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            )}
+          
         </div>
     );
 };
