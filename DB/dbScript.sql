@@ -92,9 +92,6 @@ UPDATE "Destination"
 SET destination_name = 'Universal Studios Hollywood'
 WHERE destination_id = 5;
 
-INSERT INTO "Destination" (destination_country, destination_city, is_public, description, destination_name)
-VALUES ('Romania', 'Bucharest', true, 'desc', 'Casa poporului');
-
 -- Database updated (added new tables)
 CREATE TABLE "TipsAndTricks"(
 	tips_and_trick_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,
@@ -128,7 +125,7 @@ INSERT INTO "TipsAndTricks" (user_id, destination_id, comment) VALUES
 -- Insert data into "Vote" table
 INSERT INTO "Vote" (destination_id, month, number) VALUES
 (1, 1, 50),
-(2, 2, 30),
+(2, 1, 30),
 (3, 1, 40),
 (4, 1, 25),
 (5, 1, 35);
@@ -142,7 +139,6 @@ INSERT INTO "User_Votes" (user_id, vote_id) VALUES
 -- SELECT * FROM "TipsAndTricks"
 -- SELECT * FROM "Vote"
 -- SELECT * FROM "User_Votes"
-
 -- inserting votes for each destination we have at the moment, with a hardcoded number
 
 INSERT INTO "Vote" (destination_id, month, number) VALUES
@@ -222,6 +218,7 @@ INSERT INTO "Vote" (destination_id, month, number) VALUES
 (4, 12, 10),
 (5, 12, 45);
 
+-- SELECT * FROM "Destination"
 
 -- BS-28 #1 START
 -- added new constraint
@@ -233,31 +230,28 @@ ADD CONSTRAINT destination_name_unq UNIQUE(destination_name, destination_city);
 ALTER TABLE "BucketList"
 ADD description VARCHAR(255);
 
-
 -- added descrpiption for existing entries in oreder to be able to fetch data
 UPDATE "BucketList"
 SET description = 'Bucharest is the capital and largest city of Romania. It is described as the cultural, financial, entertainment, and media center in the country with a significant influence in Eastern and Southeastern Europe as well.'
-WHERE destination_in_list_id = 1
+WHERE destination_id = 1;
 
 UPDATE "BucketList"
 SET description = 'Straddling the banks of the River Isar north of the Alps, Munich is the seat of the Bavarian administrative region of Upper Bavaria, while being the most densely populated municipality in Germany with 4,500 people per km2.'
-WHERE destination_in_list_id = 4
+WHERE destination_id = 4;
 
--- added constraint: user cannot have the same destination in his bucket list twice
-ALTER TABLE "BucketList"
-DROP CONSTRAINT IF EXISTS user_and_destination_id_unq,
-ADD CONSTRAINT user_and_destination_id_unq UNIQUE(user_id, destination_id);
-
--- SELECT * FROM "BucketList";
 
 -- BS-28 #1 DONE
-
 
 -- BS-28 #2 START
 
 -- added ids for each bucket list entry need this for sorting the data
 ALTER TABLE "BucketList"
 ADD destination_in_list_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL;
+
+-- added constraint: user cannot have the same destination in his bucket list twice
+ALTER TABLE "BucketList"
+DROP CONSTRAINT IF EXISTS user_and_destination_id_unq,
+ADD CONSTRAINT user_and_destination_id_unq UNIQUE(user_id, destination_id);
 
 -- BS-28 #2 DONE
 
@@ -281,3 +275,10 @@ ADD CONSTRAINT "Vote_destination_id_fkey"
 FOREIGN KEY (destination_id) REFERENCES "Destination" (destination_id) ON DELETE CASCADE;
 
 -- BS-28 #3 DONE
+
+-- SELECT * FROM "User"
+-- SELECT * FROM "Destination"
+-- SELECT * FROM "BucketList"
+-- SELECT * FROM "Vote"
+-- SELECT * FROM "TipsAndTricks"
+-- SELECT * FROM "User_Votes"
