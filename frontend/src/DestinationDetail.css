@@ -204,3 +204,28 @@ html, body {
 }
 
 /* Add your additional styling here */
+.editButton,
+.deleteButton,
+.saveButton {
+    background-color: #f5d6b8;
+    margin-right: 5px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.editButton:hover,
+.deleteButton:hover,
+.saveButton:hover {
+    background-color: #e0bb9b;
+}
+
+.edit-input {
+    background-color: #efece2;
+    border: none;
+    width: 100%;
+}
+
+.edit-mode-text {
+    font-size: 2em; /* Adjust the font size as needed */
+}
