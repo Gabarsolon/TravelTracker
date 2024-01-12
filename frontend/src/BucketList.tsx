@@ -272,6 +272,10 @@ const BucketList: React.FC = () => {
         console.log("handleSearchChange: " + "currentPage" + currentPage + " totalPages: " + totalPages, + " count: " + countDestinations)
 
     };
+    const handleItemClick = (destinationId: number) => {
+    // Redirect to the destination details page using the destination ID
+    window.location.assign(`/detail/${destinationId}`);
+  };
 
     const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         console.log("handleFilterChange: " + "currentPage" + currentPage + " totalPages: " + totalPages, + " count: " + countDestinations)
@@ -405,34 +409,32 @@ const BucketList: React.FC = () => {
                     <p>Empty Bucket List</p>
                 ) : (
                     <ul>
-                        {bucketList.map((destination, index) => (
-                            <li key={index} style={listItemStyle}>
-                                <div style={entityActionsStyle} className="entity-actions">
-                                    {destination.public ? (
-                                        <>
-                                             <DeleteIcon onClick={() => openDeleteConfirmation(destination)} className="delete-icon" />
+                    {bucketList.map((destination, index) => (
+                        <li key={destination.destinationId} style={listItemStyle} onClick={() => handleItemClick(destination.destinationId)}>
+                            <div style={entityActionsStyle} className="entity-actions">
+                                {destination.public ? (
+                                    <>
+                                        <DeleteIcon onClick={(e) => { e.stopPropagation(); openDeleteConfirmation(destination); }} className="delete-icon" />
                                         <Tooltip title="Edit is disabled for public destinations" arrow>
-                                            <EditIcon className="edit-icon" style={{ cursor: 'not-allowed' }} />
+                                            <EditIcon className="edit-icon" style={{ cursor: 'not-allowed' }} onClick={(e) =>{e.stopPropagation()}} />
                                         </Tooltip>
-                                        </>
-                                    ) : (
-                                        <>
-                                             <DeleteIcon onClick={() => openDeleteConfirmation(destination)} className="delete-icon" />
-                                            <EditIcon onClick={() => handleEditDestination(destination)} className="edit-icon" />
-                                        </>
-                                    )}
-                                </div>
-                                <strong style={{
-                                    fontSize: '1.2em',
-                                    fontStyle: 'oblique'
-                                }}>{destination.destinationName}</strong><br/>
-                                {destination.destinationCity}, {destination.destinationCountry}<br/>
-                                <i style={{fontSize: '0.8em'}}>
-                                    {destination.description.length > 50 ? `${destination.description.slice(0, 50)}...` : destination.description}
-                                </i>
-                            </li>
-                        ))}
-                    </ul>
+                                    </>
+                                ) : (
+                                    <>
+                                        <DeleteIcon onClick={(e) => { e.stopPropagation(); openDeleteConfirmation(destination); }} className="delete-icon" />
+                                        <EditIcon onClick={(e) =>{e.stopPropagation(); handleEditDestination(destination)}} className="edit-icon" />
+                                    </>
+                                )}
+                            </div>
+                            <strong style={{ fontSize: '1.2em', fontStyle: 'oblique' }}>{destination.destinationName}</strong><br />
+                            {destination.destinationCity}, {destination.destinationCountry}<br />
+                            <i style={{ fontSize: '0.8em' }}>
+                                {destination.description.length > 50 ? `${destination.description.slice(0, 50)}...` : destination.description}
+                            </i>
+                        </li>
+                    ))}
+                </ul>
+                
                 )}
             </div>
             <div className="pagination-container" align="center">
