@@ -180,11 +180,10 @@ public class DestinationController {
         return new ResponseEntity<>(allDestinationVotes, HttpStatus.OK);
     }
 
-    @PutMapping("/voteDestination/{destinationId}/{month}")
-    public ResponseEntity<Object> voteDestination(@PathVariable Long destinationId, @PathVariable Long month) {
+    @PutMapping("/voteDestination/{userId}/{destinationId}/{month}")
+    public ResponseEntity<Object> voteDestination(@PathVariable Long userId, @PathVariable Long destinationId, @PathVariable Long month) {
         try {
             var voteId = voteService.getVoteByDestinationIdAndMonth(destinationId, month).getVoteId();
-            Long userId = Long.valueOf(1); // must be changed after the login is implemented
 
             userVotesService.existsUserVotes(userId, voteId); // validates the voting
 
