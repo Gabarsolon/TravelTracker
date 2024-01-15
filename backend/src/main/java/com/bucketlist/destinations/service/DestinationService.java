@@ -82,18 +82,22 @@ public class DestinationService {
 
     public Destination updateDestination(Long destinationId, Destination newDestination) {
         System.out.println("Received newDestination: " + newDestination.toString());
-        Destination existingDestination = destinationRepository.findById(destinationId).orElseThrow(() -> new ResourceNotFoundException("Destination with id: " + destinationId + " not found"));
-
-        if(existingDestination.isPublic()) {
+        Destination selectedDestination = destinationRepository.findById(destinationId).orElseThrow(() -> new ResourceNotFoundException("Destination with id: " + destinationId + " not found"));
+        Destination existingDestination = findDestinationByNameAndCity(newDestination.getDestinationName(), newDestination.getDestinationCity());
+        if(selectedDestination.isPublic()) {
             throw new UnsupportedOperationException("Public destinations cannot be edited!");
         }
 
-        existingDestination.setDestinationCountry(newDestination.getDestinationCountry());
-        existingDestination.setDestinationCity(newDestination.getDestinationCity());
-        existingDestination.setDestinationName(newDestination.getDestinationName());
-        existingDestination.setDescription(newDestination.getDescription());
+        if (existingDestination != null && !Objects.equals(existingDestination.getDestinationId(), selectedDestination.getDestinationId())){
+            throw new UnsupportedOperationException("Destination already exists!");
+        }
 
-        return destinationRepository.save(existingDestination);
+        selectedDestination.setDestinationCountry(newDestination.getDestinationCountry());
+        selectedDestination.setDestinationCity(newDestination.getDestinationCity());
+        selectedDestination.setDestinationName(newDestination.getDestinationName());
+        selectedDestination.setDescription(newDestination.getDescription());
+
+        return destinationRepository.save(selectedDestination);
     }
 
     public void deleteDestination(Long destinationId, Long userId) {
