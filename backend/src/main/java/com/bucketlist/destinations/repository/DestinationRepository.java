@@ -21,7 +21,7 @@ public interface DestinationRepository extends JpaRepository<Destination, Long> 
      @Query(value = "SELECT d.destination_id, d.destination_country, d.destination_city, d.is_public, bl.description, d.destination_name\n" +
              "FROM \"Destination\" d\n" +
              "INNER JOIN \"BucketList\" bl ON d.destination_id = bl.destination_id\n" +
-             "WHERE bl.user_id = ?1\n" +
+             "WHERE bl.user_id = %?1%\n" +
              "AND (d.destination_country ILIKE %?2% \n" +
              "AND d.destination_city ILIKE %?3%\n" +
              "AND d.destination_name ILIKE %?4%)\n" +
