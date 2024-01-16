@@ -57,7 +57,7 @@ public class DestinationController {
         }
         else {
             try {
-                Destination existingDestination = destinationService.findDestinationByNameAndCity(destination.getDestinationName(), destination.getDestinationCity());
+                Destination existingDestination = destinationService.findDestinationByNameAndCityAndCountry(destination.getDestinationName(), destination.getDestinationCity(), destination.getDestinationCountry());
                 System.out.println(existingDestination);
                 bucketListService.linkDestinationToUser(userId, existingDestination.getDestinationId(), destination.getDescription());
             }
@@ -115,9 +115,9 @@ public class DestinationController {
     }
 
     @PutMapping("/update/{destinationId}")
-    public ResponseEntity<Object> updateDestination(@PathVariable Long destinationId, @RequestBody Destination newDestination) {
+    public ResponseEntity<Object> updateDestination(@PathVariable Long destinationId, @RequestBody Destination newDestination, @RequestParam Long userId) {
         try{
-            Destination updatedDestination = destinationService.updateDestination(destinationId, newDestination);
+            Destination updatedDestination = destinationService.updateDestination(destinationId, newDestination, userId);
             return new ResponseEntity<>(updatedDestination, HttpStatus.OK);
         } catch (ResourceNotFoundException exception) {
             return new ResponseEntity<>("Destination not found", HttpStatus.NOT_FOUND);

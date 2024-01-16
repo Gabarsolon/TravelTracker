@@ -85,25 +85,48 @@ public class DestinationService {
         return destinationRepository.findById(destinationId).orElse(null);
     }
 
-    public Destination updateDestination(Long destinationId, Destination newDestination) {
+    public Destination updateDestination(Long destinationId, Destination newDestination, Long userId) {
         System.out.println("Received newDestination: " + newDestination.toString());
         Destination selectedDestination = destinationRepository.findById(destinationId).orElseThrow(() -> new ResourceNotFoundException("Destination with id: " + destinationId + " not found"));
-        Destination existingDestination = findDestinationByNameAndCity(newDestination.getDestinationName(), newDestination.getDestinationCity());
+        Destination existingDestination = findDestinationByNameAndCityAndCountry(newDestination.getDestinationName(), newDestination.getDestinationCity(), newDestination.getDestinationCountry());
+
+        // Selected destination is public
         if(selectedDestination.isPublic()) {
+            System.out.println("Case0");
             throw new UnsupportedOperationException("Public destinations cannot be edited!");
         }
 
-        if (existingDestination != null &&
-                !Objects.equals(existingDestination.getDestinationId(), selectedDestination.getDestinationId())){
-            throw new UnsupportedOperationException("Destination already exists!");
+        // New destination exists and is public
+        if (existingDestination != null && existingDestination.isPublic()){
+            System.out.println("Case1");
+            throw new UnsupportedOperationException("Destination already exists as a public destination!");
         }
 
-        selectedDestination.setDestinationCountry(newDestination.getDestinationCountry());
-        selectedDestination.setDestinationCity(newDestination.getDestinationCity());
-        selectedDestination.setDestinationName(newDestination.getDestinationName());
-        selectedDestination.setDescription(newDestination.getDescription());
+        // New destination is private, but exists in the bucket list
+        if (existingDestination != null &&
+                bucketListRepository.existsByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, existingDestination.getDestinationId())){
+            System.out.println("Case2");
+            throw new UnsupportedOperationException("Destination already exists in your bucket list!");
+        }
 
-        return destinationRepository.save(selectedDestination);
+        // New destination exists or does not exist at all, so we add it in the BucketList
+        var bucketListPK = new BucketList.BucketListPK(userId, destinationId);
+        // We delete the existing bucket list entry
+        bucketListRepository.delete(new BucketList(bucketListPK, bucketListRepository.findBucketListByBucketListPK(bucketListPK).getDescription()));
+
+        if (existingDestination != null &&
+                !bucketListRepository.existsByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, existingDestination.getDestinationId())) {
+            // If it exists already, we do not add it again in the destination table
+            System.out.println("Case3");
+            bucketListRepository.save(new BucketList(new BucketList.BucketListPK(userId, existingDestination.getDestinationId()), newDestination.getDescription()));
+            return newDestination;
+        }
+
+        // New destination did not exist
+        System.out.println("Case4");
+        Destination confirmedNewDestination =  destinationRepository.save(newDestination);
+        bucketListRepository.save(new BucketList(new BucketList.BucketListPK(userId, confirmedNewDestination.getDestinationId()), newDestination.getDescription()));
+        return confirmedNewDestination;
     }
 
     public void deleteDestination(Long destinationId, Long userId) {
@@ -112,6 +135,8 @@ public class DestinationService {
         if(destinationOptional.isPresent()) {
             Destination destination = destinationOptional.get();
             System.out.println("Is public");
+            System.out.println(destinationId);
+            System.out.println(userId);
             bucketListRepository.deleteByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, destinationId);
             System.out.println("Deleted from BL");
 
@@ -137,7 +162,7 @@ public class DestinationService {
         }
     }
 
-    public Destination findDestinationByNameAndCity(String destinationName, String destinationCountry){
-        return destinationRepository.findDestinationByDestinationNameAndDestinationCity(destinationName, destinationCountry);
+    public Destination findDestinationByNameAndCityAndCountry(String destinationName, String destinationCity, String destinationCountry){
+        return destinationRepository.findDestinationByDestinationNameAndDestinationCityAndDestinationCountry(destinationName, destinationCity, destinationCountry);
     }
 }
