@@ -109,23 +109,25 @@ public class DestinationService {
             throw new UnsupportedOperationException("Destination already exists in your bucket list!");
         }
 
-        // New destination exists or does not exist at all, so we add it in the BucketList
-        var bucketListPK = new BucketList.BucketListPK(userId, destinationId);
+        // New destination exists in destination table only or does not exist at all
         // We delete the existing bucket list entry
-        bucketListRepository.delete(new BucketList(bucketListPK, bucketListRepository.findBucketListByBucketListPK(bucketListPK).getDescription()));
+        var bucketListPK = new BucketList.BucketListPK(userId, selectedDestination.getDestinationId());
+        BucketList bucketListEntry = bucketListRepository.findBucketListByBucketListPK(bucketListPK);
 
         if (existingDestination != null &&
                 !bucketListRepository.existsByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, existingDestination.getDestinationId())) {
-            // If it exists already, we do not add it again in the destination table
+            // If it exists already, we do not add it again in the destination table, we just edit the existing one
             System.out.println("Case3");
-            bucketListRepository.save(new BucketList(new BucketList.BucketListPK(userId, existingDestination.getDestinationId()), newDestination.getDescription()));
+            bucketListRepository.update(existingDestination.getDestinationId(),
+                    newDestination.getDescription(), bucketListEntry.getDestinationInListId());
             return newDestination;
         }
 
         // New destination did not exist
         System.out.println("Case4");
         Destination confirmedNewDestination =  destinationRepository.save(newDestination);
-        bucketListRepository.save(new BucketList(new BucketList.BucketListPK(userId, confirmedNewDestination.getDestinationId()), newDestination.getDescription()));
+        bucketListRepository.update(newDestination.getDestinationId(),
+                newDestination.getDescription(), bucketListEntry.getDestinationInListId());
         return confirmedNewDestination;
     }
 
@@ -135,8 +137,6 @@ public class DestinationService {
         if(destinationOptional.isPresent()) {
             Destination destination = destinationOptional.get();
             System.out.println("Is public");
-            System.out.println(destinationId);
-            System.out.println(userId);
             bucketListRepository.deleteByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, destinationId);
             System.out.println("Deleted from BL");
 

@@ -114,6 +114,7 @@ public class DestinationController {
         return new ResponseEntity<>("Destination added successfully to bucket list", HttpStatus.CREATED);
     }
 
+    @Transactional
     @PutMapping("/update/{destinationId}")
     public ResponseEntity<Object> updateDestination(@PathVariable Long destinationId, @RequestBody Destination newDestination, @RequestParam Long userId) {
         try{

@@ -52,7 +52,8 @@ public class BucketList {
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    @Column(name = "destination_in_list_id", nullable = false)
 //    private Long destinationInListId;
-
+    @Column(name = "destination_in_list_id")
+    private Long destinationInListId;
 
     public BucketList(BucketListPK bucketListPK, String description) {
         this.bucketListPK = bucketListPK;
@@ -72,5 +73,13 @@ public class BucketList {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getDestinationInListId() {
+        return destinationInListId;
     }
 }
