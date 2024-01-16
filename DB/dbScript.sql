@@ -282,3 +282,8 @@ FOREIGN KEY (destination_id) REFERENCES "Destination" (destination_id) ON DELETE
 -- SELECT * FROM "Vote"
 -- SELECT * FROM "TipsAndTricks"
 -- SELECT * FROM "User_Votes"
+
+-- BS-37 added username UNIQUE constraint
+ALTER TABLE "User"
+DROP CONSTRAINT IF EXISTS user_username_unq,
+ADD CONSTRAINT user_username_unq UNIQUE (username);
