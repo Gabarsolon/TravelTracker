@@ -28,7 +28,7 @@ public class DestinationService {
         this.bucketListRepository = bucketListRepository;
     }
 
-    public Destination addDestination(Destination destination, Long userId) {
+    public Destination addDestination(Destination destination) {
         return this.destinationRepository.save(destination);
     }
 
@@ -71,33 +71,64 @@ public class DestinationService {
         return getPublicDestinationsFiltered(filteringAttribute, filterInputData, Pageable.unpaged()).size();
     }
 
-    public Destination getDestinationDetails(Long destinationId) {
-        return destinationRepository.findById(destinationId)
+    public Destination getDestinationDetails(Long destinationId, Long userId) {
+        Destination destination = destinationRepository.findById(destinationId)
                 .orElseThrow(() -> new RuntimeException("Destination not found with id: " + destinationId));
+        if (destination.isPublic())
+            return destination;
+        BucketList.BucketListPK bucketListPK = new BucketList.BucketListPK(destinationId, userId);
+        destination.setDescription(bucketListRepository.findBucketListByBucketListPK(bucketListPK).getDescription());
+        return destination;
     }
 
     public Destination getDestinationById(Long destinationId) {
         return destinationRepository.findById(destinationId).orElse(null);
     }
 
-    public Destination updateDestination(Long destinationId, Destination newDestination) {
+    public Destination updateDestination(Long destinationId, Destination newDestination, Long userId) {
         System.out.println("Received newDestination: " + newDestination.toString());
         Destination selectedDestination = destinationRepository.findById(destinationId).orElseThrow(() -> new ResourceNotFoundException("Destination with id: " + destinationId + " not found"));
-        Destination existingDestination = findDestinationByNameAndCity(newDestination.getDestinationName(), newDestination.getDestinationCity());
+        Destination existingDestination = findDestinationByNameAndCityAndCountry(newDestination.getDestinationName(), newDestination.getDestinationCity(), newDestination.getDestinationCountry());
+
+        // Selected destination is public
         if(selectedDestination.isPublic()) {
+            System.out.println("Case0");
             throw new UnsupportedOperationException("Public destinations cannot be edited!");
         }
 
-        if (existingDestination != null && !Objects.equals(existingDestination.getDestinationId(), selectedDestination.getDestinationId())){
-            throw new UnsupportedOperationException("Destination already exists!");
+        // New destination exists and is public
+        if (existingDestination != null && existingDestination.isPublic()){
+            System.out.println("Case1");
+            throw new UnsupportedOperationException("Destination already exists as a public destination!");
         }
 
-        selectedDestination.setDestinationCountry(newDestination.getDestinationCountry());
-        selectedDestination.setDestinationCity(newDestination.getDestinationCity());
-        selectedDestination.setDestinationName(newDestination.getDestinationName());
-        selectedDestination.setDescription(newDestination.getDescription());
+        // New destination is private, but exists in the bucket list
+        if (existingDestination != null &&
+                bucketListRepository.existsByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, existingDestination.getDestinationId())){
+            System.out.println("Case2");
+            throw new UnsupportedOperationException("Destination already exists in your bucket list!");
+        }
 
-        return destinationRepository.save(selectedDestination);
+        // New destination exists in destination table only or does not exist at all
+        // We delete the existing bucket list entry
+        var bucketListPK = new BucketList.BucketListPK(userId, selectedDestination.getDestinationId());
+        BucketList bucketListEntry = bucketListRepository.findBucketListByBucketListPK(bucketListPK);
+
+        if (existingDestination != null &&
+                !bucketListRepository.existsByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, existingDestination.getDestinationId())) {
+            // If it exists already, we do not add it again in the destination table, we just edit the existing one
+            System.out.println("Case3");
+            bucketListRepository.update(existingDestination.getDestinationId(),
+                    newDestination.getDescription(), bucketListEntry.getDestinationInListId());
+            return newDestination;
+        }
+
+        // New destination did not exist
+        System.out.println("Case4");
+        Destination confirmedNewDestination =  destinationRepository.save(newDestination);
+        bucketListRepository.update(newDestination.getDestinationId(),
+                newDestination.getDescription(), bucketListEntry.getDestinationInListId());
+        return confirmedNewDestination;
     }
 
     public void deleteDestination(Long destinationId, Long userId) {
@@ -109,7 +140,7 @@ public class DestinationService {
             bucketListRepository.deleteByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, destinationId);
             System.out.println("Deleted from BL");
 
-            if(!destination.isPublic()) {
+            if(!destination.isPublic() && bucketListRepository.countBucketListByBucketListPK_DestinationId(destinationId) == 0) {
                 System.out.println("Is not public");
                 destinationRepository.deleteById(destinationId);
                 System.out.println("Deleted from destination table");
@@ -131,7 +162,7 @@ public class DestinationService {
         }
     }
 
-    public Destination findDestinationByNameAndCity(String destinationName, String destinationCountry){
-        return destinationRepository.findDestinationByDestinationNameAndDestinationCity(destinationName, destinationCountry);
+    public Destination findDestinationByNameAndCityAndCountry(String destinationName, String destinationCity, String destinationCountry){
+        return destinationRepository.findDestinationByDestinationNameAndDestinationCityAndDestinationCountry(destinationName, destinationCity, destinationCountry);
     }
 }

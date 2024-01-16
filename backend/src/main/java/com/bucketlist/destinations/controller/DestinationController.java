@@ -43,7 +43,7 @@ public class DestinationController {
     public ResponseEntity<Object> addDestination(@RequestBody Destination destination, @PathVariable Long userId) {
         Destination savedDestination = null;
         try {
-            savedDestination = destinationService.addDestination(destination, userId);
+            savedDestination = destinationService.addDestination(destination);
         }
         catch (DataIntegrityViolationException e){
             String errorMessage = e.getMostSpecificCause().getMessage();
@@ -57,7 +57,7 @@ public class DestinationController {
         }
         else {
             try {
-                Destination existingDestination = destinationService.findDestinationByNameAndCity(destination.getDestinationName(), destination.getDestinationCity());
+                Destination existingDestination = destinationService.findDestinationByNameAndCityAndCountry(destination.getDestinationName(), destination.getDestinationCity(), destination.getDestinationCountry());
                 System.out.println(existingDestination);
                 bucketListService.linkDestinationToUser(userId, existingDestination.getDestinationId(), destination.getDescription());
             }
@@ -114,10 +114,11 @@ public class DestinationController {
         return new ResponseEntity<>("Destination added successfully to bucket list", HttpStatus.CREATED);
     }
 
+    @Transactional
     @PutMapping("/update/{destinationId}")
-    public ResponseEntity<Object> updateDestination(@PathVariable Long destinationId, @RequestBody Destination newDestination) {
+    public ResponseEntity<Object> updateDestination(@PathVariable Long destinationId, @RequestBody Destination newDestination, @RequestParam Long userId) {
         try{
-            Destination updatedDestination = destinationService.updateDestination(destinationId, newDestination);
+            Destination updatedDestination = destinationService.updateDestination(destinationId, newDestination, userId);
             return new ResponseEntity<>(updatedDestination, HttpStatus.OK);
         } catch (ResourceNotFoundException exception) {
             return new ResponseEntity<>("Destination not found", HttpStatus.NOT_FOUND);
@@ -139,9 +140,9 @@ public class DestinationController {
         }
     }
     @GetMapping("/{destinationId}")
-    public ResponseEntity<?> getDestinationDetails(@PathVariable Long destinationId) {
+    public ResponseEntity<?> getDestinationDetails(@PathVariable Long destinationId, @RequestParam Long userId) {
         try {
-            Destination destination = destinationService.getDestinationDetails(destinationId);
+            Destination destination = destinationService.getDestinationDetails(destinationId, userId);
             return new ResponseEntity<>(destination, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Destination not found", HttpStatus.NOT_FOUND);
