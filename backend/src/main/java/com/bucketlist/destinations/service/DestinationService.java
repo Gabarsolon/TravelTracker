@@ -28,7 +28,7 @@ public class DestinationService {
         this.bucketListRepository = bucketListRepository;
     }
 
-    public Destination addDestination(Destination destination, Long userId) {
+    public Destination addDestination(Destination destination) {
         return this.destinationRepository.save(destination);
     }
 
@@ -71,9 +71,14 @@ public class DestinationService {
         return getPublicDestinationsFiltered(filteringAttribute, filterInputData, Pageable.unpaged()).size();
     }
 
-    public Destination getDestinationDetails(Long destinationId) {
-        return destinationRepository.findById(destinationId)
+    public Destination getDestinationDetails(Long destinationId, Long userId) {
+        Destination destination = destinationRepository.findById(destinationId)
                 .orElseThrow(() -> new RuntimeException("Destination not found with id: " + destinationId));
+        if (destination.isPublic())
+            return destination;
+        BucketList.BucketListPK bucketListPK = new BucketList.BucketListPK(destinationId, userId);
+        destination.setDescription(bucketListRepository.findBucketListByBucketListPK(bucketListPK).getDescription());
+        return destination;
     }
 
     public Destination getDestinationById(Long destinationId) {
@@ -88,7 +93,8 @@ public class DestinationService {
             throw new UnsupportedOperationException("Public destinations cannot be edited!");
         }
 
-        if (existingDestination != null && !Objects.equals(existingDestination.getDestinationId(), selectedDestination.getDestinationId())){
+        if (existingDestination != null &&
+                !Objects.equals(existingDestination.getDestinationId(), selectedDestination.getDestinationId())){
             throw new UnsupportedOperationException("Destination already exists!");
         }
 
@@ -109,7 +115,7 @@ public class DestinationService {
             bucketListRepository.deleteByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, destinationId);
             System.out.println("Deleted from BL");
 
-            if(!destination.isPublic()) {
+            if(!destination.isPublic() && bucketListRepository.countBucketListByBucketListPK_DestinationId(destinationId) == 0) {
                 System.out.println("Is not public");
                 destinationRepository.deleteById(destinationId);
                 System.out.println("Deleted from destination table");

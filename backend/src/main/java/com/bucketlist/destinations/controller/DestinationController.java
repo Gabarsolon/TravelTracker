@@ -43,7 +43,7 @@ public class DestinationController {
     public ResponseEntity<Object> addDestination(@RequestBody Destination destination, @PathVariable Long userId) {
         Destination savedDestination = null;
         try {
-            savedDestination = destinationService.addDestination(destination, userId);
+            savedDestination = destinationService.addDestination(destination);
         }
         catch (DataIntegrityViolationException e){
             String errorMessage = e.getMostSpecificCause().getMessage();
@@ -139,9 +139,9 @@ public class DestinationController {
         }
     }
     @GetMapping("/{destinationId}")
-    public ResponseEntity<?> getDestinationDetails(@PathVariable Long destinationId) {
+    public ResponseEntity<?> getDestinationDetails(@PathVariable Long destinationId, @RequestParam Long userId) {
         try {
-            Destination destination = destinationService.getDestinationDetails(destinationId);
+            Destination destination = destinationService.getDestinationDetails(destinationId, userId);
             return new ResponseEntity<>(destination, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Destination not found", HttpStatus.NOT_FOUND);

@@ -69,4 +69,8 @@ public class BucketList {
     public void setBucketListPK(BucketListPK bucketListPK) {
         this.bucketListPK = bucketListPK;
     }
+
+    public String getDescription() {
+        return description;
+    }
 }

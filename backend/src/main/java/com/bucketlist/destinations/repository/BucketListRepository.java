@@ -11,11 +11,13 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface BucketListRepository extends JpaRepository<BucketList, Long> {
 
-     List<BucketList> findBucketListByBucketListPK_UserId(Long userId);
+     BucketList findBucketListByBucketListPK(BucketList.BucketListPK bucketListPK);
 
      boolean existsByBucketListPK_UserIdAndBucketListPK_DestinationId(Long userId, Long destinationId);
 
      void deleteByBucketListPK_UserIdAndBucketListPK_DestinationId(Long userId, Long destinationId);
+
+     Integer countBucketListByBucketListPK_DestinationId(Long destinationId);
 
      List<BucketList> findBucketListByBucketListPK_UserId(Long userId, Pageable pageable);
 }
