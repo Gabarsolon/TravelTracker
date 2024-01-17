@@ -1,5 +1,7 @@
 package com.bucketlist.destinations.service;
 
+import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,15 +12,32 @@ import com.bucketlist.destinations.model.BucketList;
 import java.util.Objects;
 
 import com.bucketlist.destinations.model.Destination;
+import com.bucketlist.destinations.model.GoogleMapsAPI.DestinationCoordinates;
+import com.bucketlist.destinations.model.GoogleMapsAPI.GeocodingResponse;
+import com.bucketlist.destinations.model.GoogleMapsAPI.Geometry;
 import com.bucketlist.destinations.repository.BucketListRepository;
 import com.bucketlist.destinations.repository.DestinationRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DestinationService {
+    @Value("${GEOCODING_URL}")
+    private String GEOCODING_URL;
+
+    @Value("${GOOGLE_MAPS_API_KEY}")
+    private String GOOGLE_MAPS_API_KEY;
+
     protected DestinationRepository destinationRepository;
     protected BucketListRepository bucketListRepository;
 
@@ -164,5 +183,45 @@ public class DestinationService {
 
     public Destination findDestinationByNameAndCityAndCountry(String destinationName, String destinationCity, String destinationCountry){
         return destinationRepository.findDestinationByDestinationNameAndDestinationCityAndDestinationCountry(destinationName, destinationCity, destinationCountry);
+    }
+
+    private GeocodingResponse parseResponse(String response) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(response, GeocodingResponse.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public DestinationCoordinates getDestinationCoordinates(String destinationCity, String destinationCountry) {
+        String url = GEOCODING_URL;
+        String requestBody = MessageFormat.format(
+                "+{0},+{1}&key={2}", destinationCity, destinationCountry, GOOGLE_MAPS_API_KEY);
+
+        // Create an HTTP POST request
+        HttpPost post = new HttpPost(url + requestBody);
+
+        // Execute a HTTP POST request
+        try (CloseableHttpClient httpClient = HttpClients.custom().build();
+             CloseableHttpResponse response = httpClient.execute(post)) {
+
+            // Read the response body as a string
+            String responseBody = EntityUtils.toString(response.getEntity());
+            System.out.println("Response body: " + responseBody);
+
+            // Extract and return the coordinates from the response
+            GeocodingResponse geocodingResponse = parseResponse(responseBody.toString());
+            if (geocodingResponse != null && geocodingResponse.getResults() != null && !geocodingResponse.getResults().isEmpty()) {
+                Geometry geometry = geocodingResponse.getResults().get(0).getGeometry();
+                return new DestinationCoordinates(geometry.getLocation().getLat(), geometry.getLocation().getLng());
+            } else {
+                throw new Exception("No results are found for the given address.");
+            }
+
+        } catch (Exception e) {
+            return new DestinationCoordinates();
+        }
     }
 }
