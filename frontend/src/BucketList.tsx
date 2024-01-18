@@ -63,7 +63,7 @@ const BucketList: React.FC = () => {
                 setTotalPages(totalPages);
 
                 
-                const dataResponse = await fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/1?pageNumber=${currentPage - 1}&pageSize=${pageSize}&filteringAttribute=${filterAttribute}&filterInputData=${searchTerm}`);
+                const dataResponse = await fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/${userId}?pageNumber=${currentPage - 1}&pageSize=${pageSize}&filteringAttribute=${filterAttribute}&filterInputData=${searchTerm}`);
                 const data = await dataResponse.json();
                 setBucketList(data);
             } catch (error) {
@@ -108,9 +108,12 @@ const BucketList: React.FC = () => {
             if (response.ok) {
                 const responseData = await response.json();
                 setAddSuccess(true);
-
+            
                 setBucketList((prevList) => [...prevList, responseData]);
+              
+                console.log('New data from backend:', responseData);
 
+                console.log('Updated bucketList:', bucketList);
                 setShowAddModal(false);
                 setNewDestination({
                     destinationCountry: '',
@@ -167,7 +170,7 @@ const BucketList: React.FC = () => {
                             console.error('Error notifying backend:', response.statusText);
                         }
                     } else {
-                        const updatedData = await fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/1?pageNumber=${currentPage - 1}&pageSize=${pageSize}&filteringAttribute=${filterAttribute}`, {
+                        const updatedData = await fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/${userId}?pageNumber=${currentPage - 1}&pageSize=${pageSize}&filteringAttribute=${filterAttribute}`, {
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -266,7 +269,7 @@ const BucketList: React.FC = () => {
     const handleSaveEdit = async () => {
         if (editingDestination) {
             try {
-                const response = await fetch(`http://localhost:8080/api/v1/destination/update/${editingDestination.destinationId}`, {
+                const response = await fetch(`http://localhost:8080/api/v1/destination/update/${editingDestination.destinationId}?userId=${userId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
