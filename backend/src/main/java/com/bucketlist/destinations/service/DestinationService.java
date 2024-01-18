@@ -90,11 +90,6 @@ public class DestinationService {
         Destination selectedDestination = destinationRepository.findById(destinationId).orElseThrow(() -> new ResourceNotFoundException("Destination with id: " + destinationId + " not found"));
         Destination existingDestination = findDestinationByNameAndCityAndCountry(newDestination.getDestinationName(), newDestination.getDestinationCity(), newDestination.getDestinationCountry());
 
-        System.out.println("Existing: ");
-        System.out.println(existingDestination);
-        System.out.println("SELECTED: ");
-        System.out.println(selectedDestination);
-
         // Selected destination is public
         if(selectedDestination.isPublic()) {
             System.out.println("Case0");
