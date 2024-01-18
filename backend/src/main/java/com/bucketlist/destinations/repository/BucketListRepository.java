@@ -14,6 +14,8 @@ public interface BucketListRepository extends JpaRepository<BucketList, Long> {
 
      BucketList findBucketListByBucketListPK(BucketList.BucketListPK bucketListPK);
 
+     BucketList findBucketListByBucketListPK_UserIdAndBucketListPK_DestinationId(Long userId, Long DestinationId);
+
      boolean existsByBucketListPK_UserIdAndBucketListPK_DestinationId(Long userId, Long destinationId);
 
      void deleteByBucketListPK_UserIdAndBucketListPK_DestinationId(Long userId, Long destinationId);

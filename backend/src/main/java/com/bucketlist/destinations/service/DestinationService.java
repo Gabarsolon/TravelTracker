@@ -97,8 +97,7 @@ public class DestinationService {
                 .orElseThrow(() -> new RuntimeException("Destination not found with id: " + destinationId));
         if (destination.isPublic())
             return destination;
-        BucketList.BucketListPK bucketListPK = new BucketList.BucketListPK(destinationId, userId);
-        destination.setDescription(bucketListRepository.findBucketListByBucketListPK(bucketListPK).getDescription());
+        destination.setDescription(bucketListRepository.findBucketListByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, destinationId).getDescription());
         return destination;
     }
 
