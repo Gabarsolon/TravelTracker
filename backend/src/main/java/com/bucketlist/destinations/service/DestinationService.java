@@ -93,8 +93,10 @@ public class DestinationService {
     }
 
     public Destination getDestinationDetails(Long destinationId, Long userId) {
-        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new RuntimeException("Destination not found with id: " + destinationId));
-        if (destination.isPublic()) return destination;
+        Destination destination = destinationRepository.findById(destinationId)
+                .orElseThrow(() -> new RuntimeException("Destination not found with id: " + destinationId));
+        if (destination.isPublic())
+            return destination;
         BucketList.BucketListPK bucketListPK = new BucketList.BucketListPK(destinationId, userId);
         destination.setDescription(bucketListRepository.findBucketListByBucketListPK(bucketListPK).getDescription());
         return destination;
@@ -110,39 +112,50 @@ public class DestinationService {
         Destination existingDestination = findDestinationByNameAndCityAndCountry(newDestination.getDestinationName(), newDestination.getDestinationCity(), newDestination.getDestinationCountry());
 
         // Selected destination is public
-        if (selectedDestination.isPublic()) {
+        if(selectedDestination.isPublic()) {
             System.out.println("Case0");
             throw new UnsupportedOperationException("Public destinations cannot be edited!");
         }
 
         // New destination exists and is public
-        if (existingDestination != null && existingDestination.isPublic()) {
+        if (existingDestination != null && existingDestination.isPublic()){
             System.out.println("Case1");
             throw new UnsupportedOperationException("Destination already exists as a public destination!");
         }
 
         // New destination is private, but exists in the bucket list
-        if (existingDestination != null && bucketListRepository.existsByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, existingDestination.getDestinationId())) {
+        if (existingDestination != null &&
+                bucketListRepository.existsByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, existingDestination.getDestinationId()) &&
+                !Objects.equals(existingDestination.getDestinationId(), selectedDestination.getDestinationId())){
             System.out.println("Case2");
             throw new UnsupportedOperationException("Destination already exists in your bucket list!");
         }
 
-        // New destination exists in destination table only or does not exist at all
+        // New destination exists in destination table only or does not exist at all, or it has similar details except
+        // the description
+
         // We delete the existing bucket list entry
         var bucketListPK = new BucketList.BucketListPK(userId, selectedDestination.getDestinationId());
         BucketList bucketListEntry = bucketListRepository.findBucketListByBucketListPK(bucketListPK);
 
-        if (existingDestination != null && !bucketListRepository.existsByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, existingDestination.getDestinationId())) {
-            // If it exists already, we do not add it again in the destination table, we just edit the existing one
+        if ((existingDestination != null &&
+                !bucketListRepository.existsByBucketListPK_UserIdAndBucketListPK_DestinationId(userId, existingDestination.getDestinationId())) ||
+                (existingDestination != null &&
+                        Objects.equals(existingDestination.getDestinationId(), selectedDestination.getDestinationId()))
+        ) {
+            // If it exists already in the destination table (and in the bucket list or not),
+            // we do not add it again in the destination table, we just edit the existing one
             System.out.println("Case3");
-            bucketListRepository.update(existingDestination.getDestinationId(), newDestination.getDescription(), bucketListEntry.getDestinationInListId());
+            bucketListRepository.update(existingDestination.getDestinationId(),
+                    newDestination.getDescription(), bucketListEntry.getDestinationInListId());
             return newDestination;
         }
 
         // New destination did not exist
         System.out.println("Case4");
-        Destination confirmedNewDestination = destinationRepository.save(newDestination);
-        bucketListRepository.update(newDestination.getDestinationId(), newDestination.getDescription(), bucketListEntry.getDestinationInListId());
+        Destination confirmedNewDestination =  destinationRepository.save(newDestination);
+        bucketListRepository.update(newDestination.getDestinationId(),
+                newDestination.getDescription(), bucketListEntry.getDestinationInListId());
         return confirmedNewDestination;
     }
 
