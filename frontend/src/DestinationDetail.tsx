@@ -20,7 +20,8 @@ const DestinationDetail: React.FC = () => {
     useEffect(() => {
         const fetchDestinationDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/v1/destination/${destinationId}`, {
+                const userId = localStorage.getItem('userId');
+                const response = await fetch(`http://localhost:8080/api/v1/destination/${destinationId}?userId=${userId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -32,7 +33,6 @@ const DestinationDetail: React.FC = () => {
                     setDestination(data);
                 } else {
                     console.error('Error fetching destination details:', response.statusText);
-                    // Handle the error as needed, e.g., redirect to a not-found page
                 }
             } catch (error) {
                 console.error('Error fetching destination details:', error);
@@ -70,7 +70,6 @@ const DestinationDetail: React.FC = () => {
             <div className="most-visited-section">
                 <h2>View when this place is most visited</h2>
                 <VoteChart destinationId={destination.destinationId} />
-                {/* Add your content for the "View when this place is most visited" section */}
             </div>
 
         </div>
