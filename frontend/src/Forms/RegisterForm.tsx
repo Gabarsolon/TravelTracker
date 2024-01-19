@@ -10,7 +10,7 @@ const RegisterForm: React.FC = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [passwordMismatch, setPasswordMismatch] = useState(false);
-    const [fieldCompletionError, setFieldCompletionError] = useState(false);
+    const [fieldCompletionError, setFieldCompletionError] = useState(true);
     const [emailFormatError, setEmailFormatError] = useState(false);
     const [clicked, setClicked] = useState(false);
     const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
