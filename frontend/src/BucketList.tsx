@@ -52,27 +52,28 @@ const BucketList: React.FC = () => {
     const [editError, setEditError] = useState<boolean>(false);
     const userId = localStorage.getItem('userId');
 
+    const fetchData = async () => {
+        try {
+            // the count of destinations
+            const countResponse = await fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/${userId}/count?filteringAttribute=${filterAttribute}&filterInputData=${searchTerm}`);
+            const countData = await countResponse.json();
+            const countDestinations = countData;
+            setCountDestinations(countDestinations);
+            const totalPages = Math.ceil(countDestinations / pageSize);
+            setTotalPages(totalPages);
+
+            // get destinations for the first page
+            const dataResponse = await fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/${userId}?pageNumber=${currentPage - 1}&pageSize=${pageSize}&filteringAttribute=${filterAttribute}&filterInputData=${searchTerm}`);
+            const data = await dataResponse.json();
+            setBucketList(data);
+        } catch (error) {
+            console.error('Error fetching initial data:', error);
+        } finally {
+        //  setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                
-                const countResponse = await fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/${userId}/count?filteringAttribute=${filterAttribute}&filterInputData=${searchTerm}`);
-                const countData = await countResponse.json();
-                const countDestinations = countData;
-                setCountDestinations(countDestinations);
-                const totalPages = Math.ceil(countDestinations / pageSize);
-                setTotalPages(totalPages);
-
-                
-                const dataResponse = await fetch(`http://localhost:8080/api/v1/destination/destinationsInBucketList/${userId}?pageNumber=${currentPage - 1}&pageSize=${pageSize}&filteringAttribute=${filterAttribute}&filterInputData=${searchTerm}`);
-                const data = await dataResponse.json();
-                setBucketList(data);
-            } catch (error) {
-                console.error('Error fetching initial data:', error);
-            } finally {
-            }
-        };
-
         fetchData();
     }, [currentPage, filterAttribute, searchTerm]);
 
@@ -245,7 +246,10 @@ const BucketList: React.FC = () => {
                     setTotalPages(updatedTotalPages);
                     setDeleteSuccess(true);
 
-                    if (bucketList.length === 1 && currentPage > 1) {
+                    if(currentPage != totalPages){
+                        fetchData();
+                    }
+                    else if (bucketList.length === 1) {
                         setCurrentPage((prevPage) => prevPage - 1);
                     }
                 } else {
