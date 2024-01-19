@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class ChatGPTRequest {
-    private String model = "text-davinci-003";
+    private String model = "gpt-3.5-turbo-instruct";
     private String prompt;
     private int temperature = 1;
 

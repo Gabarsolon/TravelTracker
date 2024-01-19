@@ -60,6 +60,7 @@ public class DestinationController {
                 Destination existingDestination = destinationService.findDestinationByNameAndCityAndCountry(destination.getDestinationName(), destination.getDestinationCity(), destination.getDestinationCountry());
                 System.out.println(existingDestination);
                 bucketListService.linkDestinationToUser(userId, existingDestination.getDestinationId(), destination.getDescription());
+                return new ResponseEntity<>(existingDestination, HttpStatus.CREATED);
             }
             catch (DataIntegrityViolationException e){
                 String errorMessage = e.getMostSpecificCause().getMessage();
@@ -73,7 +74,6 @@ public class DestinationController {
             }
         }
         return new ResponseEntity<>(savedDestination, HttpStatus.CREATED);
-        //return new ResponseEntity<>("Destination added successfully to bucket list", HttpStatus.CREATED);
     }
 
     @GetMapping("/allDestinations")

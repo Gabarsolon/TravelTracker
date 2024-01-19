@@ -21,6 +21,7 @@ const Chat: React.FC = () => {
     const [additionalInfoTextBox, setAdditionalInfoTextBox] = useState('');
     const [chatResponseTextBox, setChatResponseTextBox] = useState('');
     const [hasChanges, setHasChanges] = useState(false);
+    const userId = localStorage.getItem('userId');
 
     // dropdowns lists
     const monthsList = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -308,7 +309,7 @@ const Chat: React.FC = () => {
     };
 
     const handleAddButtonClick = () => {
-        window.location.href = '/';
+        window.location.href = `/main/${userId}`;
     };
 
     const handleMonthChange = (event) => {
