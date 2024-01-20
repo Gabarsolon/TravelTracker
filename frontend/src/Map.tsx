@@ -1,5 +1,6 @@
-import React from 'react';
-import { useJsApiLoader, GoogleMap } from '@react-google-maps/api';
+import React, { useEffect, useState } from 'react';
+import { useJsApiLoader, GoogleMap, Marker } from '@react-google-maps/api';
+import axios from 'axios'; // Import axios if not already done
 import './Map.css';
 
 const containerStyle = {
@@ -19,24 +20,37 @@ const Map: React.FC = () => {
         googleMapsApiKey: "" // ADD MAPS KEY HERE WHEN RUNNING
         // DELETE KEY WHEN PUSHING TO GIT
     });
+    const userId = localStorage.getItem('userId');
+    const [map, setMap] = useState(null);
+    const [destinations, setDestinations] = useState<Array<{ latitude: number; longitude: number}>>([]);
 
-    const [map, setMap] = React.useState(null);
+    useEffect(() => {
+        const fetchDestinations = async () => {
+            console.log(userId)
+            try {
+                const response = await axios.get(
+                    `http://localhost:8080/api/v1/destination/getCoordinatesForDestinationsInBucketList/${userId}`
+                );
+
+                // Assuming the response data is an array of destinations with 'latitude' and 'longitude'
+                setDestinations(response.data);
+            } catch (error) {
+                console.error('Error fetching destination coordinates:', error);
+            }
+        };
+        fetchDestinations();
+    }, [userId]);
 
     const onLoad = React.useCallback(function callback(map) {
-        //const bounds = new window.google.maps.LatLngBounds(center);
-        //map.fitBounds(bounds);
-        map.setZoom(5);
-       // map.center(center);
-        //map.setZoom(5);
         setMap(map);
     }, []);
 
-    const onUnmount = React.useCallback(function callback(map) {
+    const onUnmount = React.useCallback(function callback() {
         setMap(null);
     }, []);
 
     return isLoaded ? (
-        <div >
+        <div>
             <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={center}
@@ -44,11 +58,19 @@ const Map: React.FC = () => {
                 onLoad={onLoad}
                 onUnmount={onUnmount}
             >
-                {/* Child components, such as markers, info windows, etc. */}
-                <></>
+                {destinations.map((destination, index) => (
+                    <Marker
+                        key={index}
+                        position={{ lat: destination.latitude, lng: destination.longitude }}
+                        // title={destination.name}
+                        // You can customize the marker icon, animation, etc. here
+                    />
+                ))}
             </GoogleMap>
         </div>
-    ) : <></>;
+    ) : (
+        <></>
+    );
 };
 
 
@@ -61,10 +83,7 @@ const App: React.FC = () => {
         </div>
     );
 };
-// npm install @googlemaps/js-api-loader @react-google-maps/api
 
-// npm i -S @react-google-maps/api
-
-//  npm install --save google-maps-react
 
 export default App;
+// npm install @googlemaps/js-api-loader @react-google-maps/api
