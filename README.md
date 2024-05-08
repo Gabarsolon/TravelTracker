@@ -1,24 +1,6 @@
 # ByteSquad
 Team project: Advanced Bucket List
 
-Team members and roles (to be refined further):  
-Frontend:  
-Alexandra- Frontend  
-Oana- Frontend  
-Stefana- Frontend  
-András - Frontend  
-
-Backend:  
-Marius- Backend/QA
-
-Full-stack:  
-Andreea- Backend(/Frontend) - Project Manager  
-Antonia- Backend(/Frontend)  
-Briana- Backend(/Frontend)  
-Dayana- Backend(/Frontend)  
-Remus- Frontend(/Backend)  
-*the role written outside the parenthesis are the ones which the developers will focus more on
-
 Components:  
 backend:  
 It represents the backend side of the application. It launches by default on http://localhost:8080/ .
