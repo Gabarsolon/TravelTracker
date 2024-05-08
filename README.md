@@ -1,4 +1,4 @@
-# ByteSquad
+# Travel Tracker
 Team project: Advanced Bucket List
 
 Components:  
